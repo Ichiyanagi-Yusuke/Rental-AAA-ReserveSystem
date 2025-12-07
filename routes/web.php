@@ -3,7 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ResortController;
-
+use App\Http\Controllers\BusinessPatternController;
+use App\Http\Controllers\BusinessCalendarController;
 
 Route::get('/', function () {
     // 未ログインなら login / ログイン済みなら dashboard
@@ -32,6 +33,14 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'master.role'])->group(function () {
     // create / store / edit / update / destroy がここで有効になる
     Route::resource('resorts', ResortController::class)->except(['index', 'show']);
+
+    Route::resource('business-patterns', BusinessPatternController::class)
+        ->except(['show']);
+
+    Route::get('/business-calendars', [BusinessCalendarController::class, 'index'])
+        ->name('business-calendars.index');
+    Route::post('/business-calendars/update-month', [BusinessCalendarController::class, 'updateMonth'])
+        ->name('business-calendars.update-month');
 });
 
 // Resort 詳細（全ログインユーザーOK）

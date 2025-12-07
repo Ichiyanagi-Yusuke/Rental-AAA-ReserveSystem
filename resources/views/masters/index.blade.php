@@ -1,42 +1,44 @@
 <x-app-layout>
+    @php
+        $user = auth()->user();
+        $isMasterUser = $user && in_array((int) $user->role, [0, 1], true);
+    @endphp
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            ダッシュボード
+            マスタ一覧
         </h2>
     </x-slot>
 
     <div class="py-6">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            {{-- 上部に一言メッセージなど置きたければここに --}}
-            <div class="mb-4">
-                <p class="text-sm text-gray-600">
-                    ようこそ。各種マスタや機能へアクセスできます。
-                </p>
-            </div>
-
-            {{-- カードレイアウト --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {{-- マスタ一覧カード --}}
-                <a href="{{ route('masters.index') }}"
+                {{-- 主要リゾートマスタ --}}
+                <a href="{{ route('resorts.index') }}"
                     class="flex flex-col justify-between bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 hover:shadow-md hover:border-indigo-200 transition">
                     <div class="flex items-start justify-between gap-2">
                         <div>
                             <h3 class="text-sm font-semibold text-gray-900">
-                                マスタ一覧
+                                主要リゾートマスタ
                             </h3>
                             <p class="mt-1 text-xs text-gray-500">
-                                リゾートマスタなど、各種マスタ管理画面への入口です。
+                                取扱いリゾートの一覧を確認できます。<br>
+                                @if ($isMasterUser)
+                                    新規登録・編集・削除が可能です。
+                                @else
+                                    一般ユーザーは参照のみ可能です。
+                                @endif
                             </p>
                         </div>
                         <div class="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-50">
                             <span class="text-xs font-semibold text-indigo-600">
-                                MST
+                                RES
                             </span>
                         </div>
                     </div>
                     <div class="mt-4 flex items-center justify-between text-xs">
                         <span class="inline-flex items-center rounded-full px-2.5 py-1 bg-gray-100 text-gray-600">
-                            一覧へ
+                            リスト表示
                         </span>
                         <span class="inline-flex items-center text-indigo-600 font-medium">
                             開く
@@ -48,7 +50,12 @@
                     </div>
                 </a>
 
-                {{-- 今後、他機能のカードをここに増やしていける --}}
+                {{-- 今後マスタを増やす場合は、ここにカードを追加していける --}}
+                {{--
+                <a href="{{ route('something.index') }}" class="...">
+                    ...
+                </a>
+                --}}
             </div>
         </div>
     </div>

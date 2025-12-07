@@ -5,6 +5,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ResortController;
 use App\Http\Controllers\BusinessPatternController;
 use App\Http\Controllers\BusinessCalendarController;
+use App\Http\Controllers\RentalMenuController;
+use App\Http\Controllers\GearItemController;
+use App\Http\Controllers\RentalMenuComponentController;
+use App\Http\Controllers\RentalMenuCategoryController;
+use App\Http\Controllers\GearItemCategoryController;
 
 Route::get('/', function () {
     // 未ログインなら login / ログイン済みなら dashboard
@@ -41,6 +46,27 @@ Route::middleware(['auth', 'master.role'])->group(function () {
         ->name('business-calendars.index');
     Route::post('/business-calendars/update-month', [BusinessCalendarController::class, 'updateMonth'])
         ->name('business-calendars.update-month');
+
+
+    Route::resource('rental-menus', RentalMenuController::class)
+        ->parameters(['rental-menus' => 'rentalMenu']);
+
+    Route::resource('gear-items', GearItemController::class)
+        ->parameters(['gear-items' => 'gearItem']);
+
+    // メニュー構成編集
+    Route::get('rental-menus/{rentalMenu}/components', [RentalMenuComponentController::class, 'edit'])
+        ->name('rental-menus.components.edit');
+
+    Route::post('rental-menus/{rentalMenu}/components', [RentalMenuComponentController::class, 'update'])
+        ->name('rental-menus.components.update');
+
+    Route::resource('rental-menu-categories', RentalMenuCategoryController::class)
+        ->parameters(['rental-menu-categories' => 'rentalMenuCategory']);
+    // ->except(['destroy']); // destroy も使うなら except は消してOK
+    Route::resource('gear-item-categories', GearItemCategoryController::class)
+        ->parameters(['gear-item-categories' => 'gearItemCategory']);
+
 });
 
 // Resort 詳細（全ログインユーザーOK）

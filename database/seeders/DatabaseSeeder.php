@@ -15,6 +15,11 @@ class DatabaseSeeder extends Seeder
             InitialUserSeeder::class,
             InitialResortSeeder::class,
             BusinessPatternSeeder::class,
+            RentalMenuCategorySeeder::class,
+            RentalMenuSeeder::class,
+            GearItemCategorySeeder::class,
+            GearItemSeeder::class,
+            RentalMenuComponentSeeder::class,
         ]);
     }
 }

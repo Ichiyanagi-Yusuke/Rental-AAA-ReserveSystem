@@ -40,6 +40,86 @@
                     </div>
                 </a>
 
+                <a href="{{ route('gear-items.index') }}"
+                    class="block bg-white shadow-sm rounded-lg border border-gray-200 hover:border-indigo-400 hover:shadow-md transition p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm font-semibold text-gray-800">
+                            レンタル品マスタ
+                        </h3>
+                        <span
+                            class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-700">
+                            一覧・詳細
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-3">
+                        レンタル品の管理。
+                    </p>
+                    <div class="flex items-center justify-between text-xs text-indigo-600">
+                        <span>レンタル品一覧を開く</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
+                <a href="{{ route('rental-menus.index') }}"
+                    class="block bg-white shadow-sm rounded-lg border border-gray-200 hover:border-indigo-400 hover:shadow-md transition p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm font-semibold text-gray-800">
+                            メニューマスタ
+                        </h3>
+                        <span
+                            class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-700">
+                            一覧・詳細
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-3">
+                        料金表の一覧。
+                    </p>
+                    <div class="flex items-center justify-between text-xs text-indigo-600">
+                        <span>メニューリスト一覧を開く</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
+                <a href="{{ route('rental-menu-categories.index') }}"
+                    class="block bg-white shadow-sm rounded-lg border border-gray-200 hover:border-indigo-400 hover:shadow-md transition p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm font-semibold text-gray-800">
+                            メニューカテゴリマスタ
+                        </h3>
+                        <span
+                            class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-700">
+                            一覧・詳細
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-3">
+                        料金表に使用するカテゴリの一覧。
+                    </p>
+                    <div class="flex items-center justify-between text-xs text-indigo-600">
+                        <span>メニューカテゴリ一覧を開く</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
+                <a href="{{ route('gear-item-categories.index') }}"
+                    class="block bg-white shadow-sm rounded-lg border border-gray-200 hover:border-indigo-400 hover:shadow-md transition p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm font-semibold text-gray-800">
+                            ギアカテゴリマスタ
+                        </h3>
+                        <span
+                            class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-700">
+                            一覧・詳細
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-3">
+                        ギアに使用するカテゴリの一覧。
+                    </p>
+                    <div class="flex items-center justify-between text-xs text-indigo-600">
+                        <span>ギアカテゴリ一覧を開く</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
                 {{-- 営業パターンマスタ（マスタユーザーのみ） --}}
                 @if ($isMasterUser)
                     <a href="{{ route('business-patterns.index') }}"

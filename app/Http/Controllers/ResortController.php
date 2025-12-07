@@ -39,24 +39,40 @@ class ResortController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $rules = [
             'name'          => ['required', 'string', 'max:20', 'unique:resorts,name'],
             'price'         => ['required', 'integer', 'min:0'],
             'holiday_price' => ['required', 'integer', 'min:0'],
             'ticket'        => ['required', 'integer', 'min:0'],
             'sales_stop'    => ['nullable', 'boolean'],
-        ]);
+        ];
+
+        // このフォーム専用の「項目名（日本語）」定義
+        $attributes = [
+            'name'          => 'リゾート名',
+            'price'         => '通常料金',
+            'holiday_price' => '休日料金',
+            'ticket'        => 'チケット枚数',
+            'sales_stop'    => '販売停止フラグ',
+        ];
+
+        $validated = $request->validate($rules, [], $attributes);
 
         $validated['sales_stop'] = $request->boolean('sales_stop');
         $validated['create_user_id'] = auth()->id();
         $validated['update_user_id'] = auth()->id();
 
-        Resort::create($validated);
+        $resort = Resort::create($validated);
 
         return redirect()
             ->route('resorts.index')
-            ->with('status', 'リゾートを登録しました。');
+            ->with('status', [
+                'type'    => 'success',
+                'message' => "{$resort->name}を登録しました。",
+            ]);
     }
+
+
 
     /**
      * 編集フォーム
@@ -71,13 +87,23 @@ class ResortController extends Controller
      */
     public function update(Request $request, Resort $resort)
     {
-        $validated = $request->validate([
+        $rules = [
             'name'          => ['required', 'string', 'max:20', 'unique:resorts,name,' . $resort->id],
             'price'         => ['required', 'integer', 'min:0'],
             'holiday_price' => ['required', 'integer', 'min:0'],
             'ticket'        => ['required', 'integer', 'min:0'],
             'sales_stop'    => ['nullable', 'boolean'],
-        ]);
+        ];
+
+        $attributes = [
+            'name'          => 'リゾート名',
+            'price'         => '通常料金',
+            'holiday_price' => '休日料金',
+            'ticket'        => 'チケット枚数',
+            'sales_stop'    => '販売停止フラグ',
+        ];
+
+        $validated = $request->validate($rules, [], $attributes);
 
         $validated['sales_stop'] = $request->boolean('sales_stop');
         $validated['update_user_id'] = auth()->id();
@@ -86,18 +112,28 @@ class ResortController extends Controller
 
         return redirect()
             ->route('resorts.index')
-            ->with('status', 'リゾート情報を更新しました。');
+            ->with('status', [
+                'type'    => 'success',
+                'message' => "{$resort->name}を更新しました。",
+            ]);
     }
+
 
     /**
      * 削除（論理削除）
      */
     public function destroy(Resort $resort)
     {
+        // 削除前に名前を退避しておく
+        $name = $resort->name;
+
         $resort->delete();
 
         return redirect()
             ->route('resorts.index')
-            ->with('status', 'リゾートを削除しました。');
+            ->with('status', [
+                'type'    => 'success',
+                'message' => "{$name}を削除しました。",
+            ]);
     }
 }

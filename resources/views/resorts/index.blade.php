@@ -13,11 +13,27 @@
 
     <div class="py-6">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-            @if (session('status'))
-                <div class="mb-4 text-sm text-green-600">
-                    {{ session('status') }}
+            @php
+                $status = session('status');
+            @endphp
+
+            @if ($status)
+                @php
+                    $type = is_array($status) ? $status['type'] ?? 'success' : 'success';
+                    $message = is_array($status) ? $status['message'] ?? '' : $status;
+
+                    $styles = match ($type) {
+                        'success' => 'border-green-200 bg-green-50 text-green-800',
+                        'error' => 'border-red-200 bg-red-50 text-red-800',
+                        default => 'border-gray-200 bg-gray-50 text-gray-800',
+                    };
+                @endphp
+
+                <div class="mb-4 rounded-md border px-4 py-3 text-sm {{ $styles }}">
+                    {{ $message }}
                 </div>
             @endif
+
 
             <div class="mb-4 flex justify-end">
                 @if ($isMasterUser)

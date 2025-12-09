@@ -125,6 +125,11 @@ Route::middleware(['auth'])->group(function () {
         // 向こう1週間の予約数
         Route::get('/weekly-reservations', [DataAnalysisController::class, 'weeklyReservations'])
             ->name('weekly_reservations');
+
+        // ▼ 追加: 今シーズンのサマリ分析
+        Route::get('/season-summary', [DataAnalysisController::class, 'seasonSummary'])
+            ->name('season_summary');
+
     });
 
 });

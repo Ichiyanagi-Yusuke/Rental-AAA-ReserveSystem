@@ -46,6 +46,9 @@ class ReservationController extends Controller
 
         // ?filter=today / ?filter=tomorrow を解釈
         $filter      = $request->query('filter');
+        // ★ 追加: 特定日付指定 (?date=2025-12-10)
+        $dateParam   = $request->query('date');
+
         $targetDate  = null;
         $filterLabel = null;
 
@@ -55,6 +58,14 @@ class ReservationController extends Controller
         } elseif ($filter === 'tomorrow') {
             $targetDate  = Carbon::tomorrow();
             $filterLabel = '明日の予約';
+        } elseif ($dateParam) {
+            // ★ 追加: 日付パラメータがある場合の処理
+            try {
+                $targetDate = Carbon::parse($dateParam);
+                $filterLabel = $targetDate->format('Y年n月j日') . 'の予約';
+            } catch (\Exception $e) {
+                // 不正な日付形式の場合は無視
+            }
         }
 
         if ($targetDate) {
@@ -65,7 +76,7 @@ class ReservationController extends Controller
             ->orderBy('visit_date')
             ->orderBy('visit_time')
             ->paginate(20)
-            ->withQueryString(); // ← ページ送りしても filter を保持
+            ->withQueryString();
 
         return view('reservations.index', [
             'reservations' => $reservations,

@@ -144,6 +144,40 @@
                         </span>
                     </div>
                 </a>
+
+
+                {{-- データ分析カード（ここに追加） --}}
+                <a href="{{ route('analysis.index') }}"
+                    class="flex flex-col justify-between bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 hover:shadow-md hover:border-blue-200 transition">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-900">
+                                データ分析
+                            </h3>
+                            <p class="mt-1 text-xs text-gray-500">
+                                予約状況の可視化や統計データを確認します。
+                            </p>
+                        </div>
+                        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50">
+                            <svg class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs">
+                        <span class="inline-flex items-center rounded-full px-2.5 py-1 bg-gray-100 text-gray-600">
+                            分析メニュー
+                        </span>
+                        <span class="inline-flex items-center text-blue-600 font-medium">
+                            開く
+                            <svg class="ml-1 h-3 w-3" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </span>
+                    </div>
+                </a>
                 {{-- 今後、他機能のカードをここに増やしていける --}}
             </div>
         </div>

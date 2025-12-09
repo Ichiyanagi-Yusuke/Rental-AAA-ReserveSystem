@@ -13,6 +13,16 @@ use App\Http\Controllers\GearItemCategoryController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReservationDetailController;
 
+use App\Http\Controllers\HomeController;
+
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/home/pricing', [HomeController::class, 'pricing'])->name('client.pricing');
+Route::get('/home/calendar', [HomeController::class, 'calendar'])->name('client.calendar');
+Route::get('/home/news', [HomeController::class, 'news'])->name('client.news');
+Route::get('/home/news/1', [HomeController::class, 'news1'])->name('client.news1');
+Route::get('/home/news/2', [HomeController::class, 'news2'])->name('client.news2');
+Route::get('/home/news/3', [HomeController::class, 'news3'])->name('client.news3');
+
 Route::get('/', function () {
     // 未ログインなら login / ログイン済みなら dashboard
     return auth()->check()

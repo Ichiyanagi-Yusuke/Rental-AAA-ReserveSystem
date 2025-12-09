@@ -1,0 +1,222 @@
+@charset "UTF-8";
+
+/* =========================================
+   client-page.css
+   下層ページ用スタイル（カレンダー、料金詳細など）
+   ========================================= */
+
+/* ページヘッダー */
+.page-header {
+    background: var(--black);
+    color: var(--white);
+    text-align: center;
+    padding: 8rem 0 4rem;
+    margin-top: 80px;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.5) 100%);
+    z-index: 1;
+}
+
+.page-header .container { position: relative; z-index: 2; }
+
+/* 背景画像パスの修正: ../images/client/... */
+.page-header-pricing { background-image: url("../images/client/pricing-detail-header-bg.jpg"); }
+.page-header-calendar { background-image: url("../images/client/calender-header.jpg"); }
+.page-header-news { background-image: url("../images/client/news-header.jpg"); }
+
+.page-header h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    letter-spacing: 3px;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.page-header p {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.btn-back {
+    display: inline-block;
+    padding: 1rem 2rem;
+    padding-left: 3rem;
+    background: var(--white);
+    color: var(--black);
+    text-decoration: none;
+    border-radius: 0;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid var(--black);
+    margin-left: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-back::before {
+    content: '◀︎';
+    position: absolute;
+    left: 1.2rem; top: 50%; transform: translateY(-50%);
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.btn-back:hover { background: var(--black); color: var(--white); }
+.btn-back:hover::before { left: 0.9rem; animation: arrowSlideLeft 0.6s ease-in-out infinite; }
+
+@keyframes arrowSlideLeft {
+    0%, 100% { transform: translateY(-50%) translateX(0); }
+    50% { transform: translateY(-50%) translateX(-5px); }
+}
+
+/* 営業日カレンダーページ */
+.calendar-section { padding: 4rem 0; background: var(--white); }
+.calendar-intro { text-align: center; margin-bottom: 4rem; }
+.calendar-intro h2 { font-size: 2rem; margin-bottom: 1rem; color: var(--black); }
+.calendar-intro p { font-size: 1.2rem; color: var(--text-gray); margin-bottom: 2rem; }
+
+.calendar-legend {
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 1.5rem; margin-top: 2rem;
+}
+
+.legend-item { display: flex; align-items: center; gap: 0.5rem; }
+.legend-color { width: 30px; height: 30px; border-radius: 5px; }
+.legend-color.type-a { background: #e3f2fd; border: 2px solid #90caf9; }
+.legend-color.type-b { background: #e8f5e9; border: 2px solid #81c784; }
+.legend-color.type-c { background: #fff3e0; border: 2px solid #ffb74d; }
+.legend-color.type-d { background: #f3e5f5; border: 2px solid #ba68c8; }
+.legend-color.closed { background: #e0e0e0; border: 2px solid #9e9e9e; }
+
+.calendar-month {
+    margin-bottom: 4rem; background: var(--white); padding: 2rem;
+    border-radius: 0; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.month-title { font-size: 1.8rem; margin-bottom: 2rem; color: var(--black); text-align: center; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+
+.calendar-weekday {
+    text-align: center; font-weight: 700; padding: 1rem;
+    background: var(--light-gray); color: var(--black); font-size: 0.9rem;
+}
+
+.calendar-day {
+    aspect-ratio: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 0.5rem;
+    border-radius: 8px; font-weight: 600; position: relative; transition: all 0.3s ease;
+}
+
+.calendar-day.empty { background: transparent; }
+.calendar-day.closed { background: #e0e0e0; color: #9e9e9e; }
+.calendar-day.type-a { background: #e3f2fd; color: #1565c0; border: 2px solid #90caf9; }
+.calendar-day.type-b { background: #e8f5e9; color: #2e7d32; border: 2px solid #81c784; }
+.calendar-day.type-c { background: #fff3e0; color: #e65100; border: 2px solid #ffb74d; }
+.calendar-day.type-d { background: #f3e5f5; color: #6a1b9a; border: 2px solid #ba68c8; }
+
+.season-end-note { text-align: center; margin-top: 1rem; color: var(--text-gray); font-size: 0.9rem; }
+
+.calendar-notes { margin: 4rem 0; padding: 2rem; background: var(--light-gray); border-radius: 0; }
+.calendar-notes h3 { font-size: 1.5rem; margin-bottom: 1rem; color: var(--black); }
+.calendar-notes ul { list-style: none; padding-left: 0; }
+.calendar-notes li { padding: 0.8rem 0; border-bottom: 1px solid var(--border-gray); color: var(--text-gray); line-height: 1.8; }
+.calendar-notes li:last-child { border-bottom: none; }
+.calendar-notes li::before { content: '・'; color: var(--primary-red); font-weight: bold; margin-right: 0.5rem; }
+
+.calendar-cta { text-align: center; margin-top: 4rem; }
+.btn-calendar {
+    display: inline-block; margin-top: 1rem; padding: 0.8rem 1.5rem; padding-right: 2.5rem;
+    background: var(--primary-red); color: var(--white); text-decoration: none;
+    border-radius: 0; font-weight: 600; transition: all 0.3s ease;
+    position: relative; overflow: hidden;
+}
+
+.btn-calendar::after {
+    content: '▶︎'; position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+    font-size: 0.8rem; transition: all 0.3s ease;
+}
+
+.btn-calendar:hover { background: var(--dark-red); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3); }
+.btn-calendar:hover::after { right: 0.7rem; animation: arrowSlide 0.6s ease-in-out infinite; }
+
+/* レンタル料金詳細ページ */
+.pricing-detail-section { padding: 4rem 0; background: var(--white); }
+.pricing-category { margin-bottom: 5rem; }
+
+.category-title {
+    font-size: 2.5rem; margin-bottom: 1rem; color: var(--black);
+    display: flex; align-items: center; gap: 1rem;
+}
+.title-icon { font-size: 2.5rem; }
+.category-description { font-size: 1.1rem; color: var(--text-gray); margin-bottom: 2rem; }
+
+.subcategory-title {
+    font-size: 1.8rem; margin: 3rem 0 1.5rem; color: var(--black);
+    border-left: 4px solid var(--primary-red); padding-left: 1rem;
+}
+
+.price-table-wrapper {
+    overflow-x: auto; margin-bottom: 3rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); border-radius: 0;
+}
+
+.price-table { width: 100%; border-collapse: collapse; background: var(--white); }
+.price-table thead { background: var(--black); color: var(--white); }
+.price-table th { padding: 1.5rem 1rem; text-align: left; font-weight: 600; }
+.price-table th.item-name { width: 40%; }
+.price-table th.price-col { text-align: center; width: 20%; }
+.price-table tbody tr { border-bottom: 1px solid var(--border-gray); transition: background 0.3s ease; }
+.price-table tbody tr:hover { background: var(--light-gray); }
+.price-table tbody tr.featured-row { background: #fff8f8; }
+.price-table tbody tr.category-header { background: var(--light-gray); font-weight: 700; }
+.price-table tbody tr.category-header td { padding: 1rem; font-size: 1.1rem; color: var(--black); }
+.price-table td { padding: 1.5rem 1rem; }
+.price-table td.item-name { font-size: 1rem; }
+.price-table td.item-name strong { display: block; margin-bottom: 0.3rem; font-size: 1.1rem; }
+.item-description { font-size: 0.9rem; color: var(--text-gray); margin-top: 0.3rem; }
+
+.item-badge {
+    display: inline-block; padding: 0.2rem 0.8rem; border-radius: 0;
+    font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;
+}
+.item-badge.premium { background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color: var(--black); }
+.item-badge.popular { background: var(--primary-red); color: var(--white); }
+
+.price-table td.price-col {
+    text-align: center; font-weight: 700; font-size: 1.1rem; color: var(--primary-red);
+}
+
+.pricing-notes { margin: 4rem 0; padding: 3rem; background: var(--light-gray); border-radius: 0; }
+.pricing-notes h3 { font-size: 2rem; margin-bottom: 2rem; text-align: center; color: var(--black); }
+.notes-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+.note-item { background: var(--white); padding: 1.5rem; border-radius: 0; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05); }
+.note-item h4 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--black); }
+.note-item p { font-size: 0.95rem; color: var(--text-gray); line-height: 1.6; }
+
+.pricing-cta { text-align: center; margin-top: 5rem; padding: 3rem; background: var(--light-gray); border-radius: 0; }
+.pricing-cta h2 { font-size: 2rem; margin-bottom: 1rem; color: var(--black); }
+.pricing-cta p { font-size: 1.1rem; color: var(--text-gray); margin-bottom: 2rem; }
+
+/* レスポンシブ (下層ページ) */
+@media (max-width: 1024px) {
+    .notes-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .page-header { padding: 6rem 0 3rem; background-attachment: scroll; }
+    .page-header h1 { font-size: 2rem; }
+    .calendar-grid { gap: 3px; }
+    .calendar-day { font-size: 0.9rem; }
+    .price-table-wrapper { position: relative; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .price-table { min-width: 600px; }
+    .btn-back { margin-left: 0; margin-top: 1rem; }
+}

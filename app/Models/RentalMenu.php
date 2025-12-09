@@ -16,9 +16,16 @@ class RentalMenu extends Model
         'menu_type',
         'is_junior',
         'base_price',
+        'is_set_menu',
         'consecutive_base_price',
         'base_discount_amount',
         'is_active',
+    ];
+
+    protected $casts = [
+        'is_active'    => 'boolean',
+        'is_junior'    => 'boolean',
+        'is_set_menu'  => 'boolean',   // ★ 追加
     ];
 
     public function category()

@@ -15,6 +15,7 @@ use App\Http\Controllers\ReservationDetailController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsPostController;
 use App\Http\Controllers\PublicNewsController;
+use App\Http\Controllers\DataAnalysisController;
 
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -116,6 +117,15 @@ Route::middleware(['auth'])->group(function () {
         ->name('reservations.print.execute');
 
     Route::resource('news-posts', NewsPostController::class);
+
+    // ★ 追加: データ分析関連
+    Route::prefix('analysis')->name('analysis.')->group(function () {
+        // 分析メニュー一覧
+        Route::get('/', [DataAnalysisController::class, 'index'])->name('index');
+        // 向こう1週間の予約数
+        Route::get('/weekly-reservations', [DataAnalysisController::class, 'weeklyReservations'])
+            ->name('weekly_reservations');
+    });
 
 });
 

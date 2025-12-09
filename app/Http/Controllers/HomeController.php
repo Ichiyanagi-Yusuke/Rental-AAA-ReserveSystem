@@ -38,41 +38,7 @@ class HomeController extends Controller
         return view('client.pricing');
     }
 
-    public function news()
-    {
-        // ★将来的にここでデータベースからデータを取得できます
-        // 例: $news = News::latest()->take(3)->get();
 
-        // 変数をビューに渡す場合は compact('news') のように記述します
-        return view('client.news');
-    }
-
-    public function news1()
-    {
-        // ★将来的にここでデータベースからデータを取得できます
-        // 例: $news1 = News::latest()->take(3)->get();
-
-        // 変数をビューに渡す場合は compact('news1') のように記述します
-        return view('client.news-detail-1');
-    }
-
-    public function news2()
-    {
-        // ★将来的にここでデータベースからデータを取得できます
-        // 例: $news2 = News::latest()->take(3)->get();
-
-        // 変数をビューに渡す場合は compact('news2') のように記述します
-        return view('client.news-detail-2');
-    }
-
-    public function news3()
-    {
-        // ★将来的にここでデータベースからデータを取得できます
-        // 例: $news3 = News3::latest()->take(3)->get();
-
-        // 変数をビューに渡す場合は compact('news3') のように記述します
-        return view('client.news-detail-3');
-    }
 
 
 

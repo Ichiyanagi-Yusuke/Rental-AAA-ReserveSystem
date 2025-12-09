@@ -50,8 +50,8 @@
                         class="menu-sub">アクセス/マップ</span></a></li>
             <li><a href="{{ route('client.calendar') }}" class="side-menu-link"><span class="menu-main">OPEN
                         CALENDAR</span><span class="menu-sub">営業日カレンダー</span></a></li>
-            <li><a href="{{ url('/news') }}" class="side-menu-link"><span class="menu-main">NEWS & BLOG</span><span
-                        class="menu-sub">お知らせ/ブログ</span></a></li>
+            <li><a href="{{ route('client.news.index') }}" class="side-menu-link"><span class="menu-main">NEWS &
+                        BLOG</span><span class="menu-sub">お知らせ/ブログ</span></a></li>
         </ul>
         <div class="side-menu-reservation">
             <a href="https://takasuaaa.xsrv.jp/reservation/agree" class="btn-side-reservation">予約する</a>

@@ -625,11 +625,15 @@ class ReservationController extends Controller
             abort(403);
         }
 
-        // リレーションをまとめてロード
+        // リレーションをまとめてロード（ネストしたリレーションを追加）
         $reservation->load([
             'resort',
+            'details.mainGearMenu', // ★追加
+            'details.wearMenu',     // ★追加
+            'details.gloveMenu',    // ★追加
+            'details.goggleMenu',   // ★追加
             'details' => function ($q) {
-                $q->orderBy('id'); // 並び順はお好みで（group_seq などがあればそちらでも）
+                $q->orderBy('id');
             },
         ]);
 

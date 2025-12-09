@@ -9,6 +9,8 @@ use App\Models\RentalMenu;
 use App\Models\RentalMenuCategory; // ★ 追加
 use App\Models\BusinessCalendar;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -73,7 +75,7 @@ class ReservationController extends Controller
         ]);
     }
 
-    
+
     public function startCreate()
     {
         // ★ 新規予約開始なので、前回の入力内容をクリア
@@ -635,6 +637,36 @@ class ReservationController extends Controller
             'reservation' => $reservation,
             'details'     => $reservation->details,
         ]);
+    }
+
+    public function downloadPdf(Reservation $reservation)
+    {
+        if (! $this->isMasterUser()) {
+            abort(403);
+        }
+
+        // 必要な情報をロード
+        $reservation->load([
+            'resort',
+            'details' => function ($q) {
+                $q->orderBy('id');
+            },
+        ]);
+
+        $pdf = Pdf::loadView('reservations.pdf', [
+            'reservation' => $reservation,
+            'details'     => $reservation->details,
+        ])
+            ->setPaper('A4', 'portrait'); // A4縦
+
+        $fileName = 'reservation_'
+            . ($reservation->id ?? 'unknown')
+            . '_'
+            . (optional($reservation->visit_date)->format('Ymd') ?? 'date')
+            . '.pdf';
+
+        return $pdf->download($fileName);
+        // ブラウザ表示にしたいときは ->stream($fileName);
     }
 
 }

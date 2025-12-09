@@ -85,6 +85,11 @@
                         class="inline-flex items-center px-4 py-2 rounded-md border border-gray-300 bg-white hover:bg-gray-50 text-gray-700">
                         一覧に戻る
                     </a>
+                    <a href="{{ route('reservations.pdf', $reservation->id) }}"
+                        class="inline-flex items-center px-4 py-2 rounded-md border border-gray-300 bg-white text-sm text-gray-700 hover:bg-gray-50"
+                        target="_blank">
+                        帳票PDFを出力
+                    </a>
                     {{-- 必要であれば「予約編集」「帳票出力」などのボタンをここに足せます --}}
                 </div>
             </div>

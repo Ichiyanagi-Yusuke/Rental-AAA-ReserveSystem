@@ -96,6 +96,20 @@
                     </div>
                 </a>
 
+
+
+                <a href="{{ route('reservations.print.form') }}"
+                    class="block bg-white shadow-sm rounded-lg p-5 hover:bg-gray-50 transition">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-1">
+                        貸出票印刷
+                    </h3>
+                    <p class="text-sm text-gray-500 mb-3">
+                        本日・明日・期間指定・全ての未印刷分から、貸出票をまとめて印刷します。
+                    </p>
+                    <div class="text-xs text-gray-400">
+                        印刷済みの予約には印刷日時と印刷者が記録され、次回以降の対象外になります。
+                    </div>
+                </a>
                 {{-- 今後、他機能のカードをここに増やしていける --}}
             </div>
         </div>

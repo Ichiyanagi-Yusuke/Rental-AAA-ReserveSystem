@@ -653,6 +653,11 @@ class ReservationController extends Controller
             },
         ]);
 
+        // ★ 印刷記録（常に更新 or 初回のみ、好みですがここでは毎回更新）
+        $reservation->printed_at      = now();
+        $reservation->printed_user_id = Auth::id();
+        $reservation->save();
+
         $pdf = Pdf::loadView('reservations.pdf', [
             'reservation' => $reservation,
             'details'     => $reservation->details,
@@ -667,6 +672,107 @@ class ReservationController extends Controller
 
         return $pdf->download($fileName);
         // ブラウザ表示にしたいときは ->stream($fileName);
+    }
+
+    public function printForm(Request $request)
+    {
+        if (! $this->isMasterUser()) {
+            abort(403);
+        }
+
+        return view('reservations.print_form');
+    }
+
+    /**
+     * 条件に基づき未印刷予約をまとめてPDF化し、printed_at / printed_user_id を更新
+     */
+    public function printExecute(Request $request)
+    {
+        if (! $this->isMasterUser()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'mode'       => ['required', 'in:today,tomorrow,range,all_unprinted'],
+            'from_date'  => ['nullable', 'date'],
+            'to_date'    => ['nullable', 'date'],
+        ]);
+
+        $mode      = $validated['mode'];
+        $fromDate  = null;
+        $toDate    = null;
+
+        if ($mode === 'range') {
+            // 期間指定時は from / to 必須
+            $request->validate([
+                'from_date' => ['required', 'date'],
+                'to_date'   => ['required', 'date', 'after_or_equal:from_date'],
+            ]);
+            $fromDate = Carbon::parse($request->input('from_date'))->startOfDay();
+            $toDate   = Carbon::parse($request->input('to_date'))->endOfDay();
+        }
+
+        $query = Reservation::with([
+            'resort',
+            'details' => fn($q) => $q->orderBy('id'),
+        ])
+            ->whereNull('printed_at'); // ★ 未印刷のみ
+
+        switch ($mode) {
+            case 'today':
+                $today = Carbon::today();
+                $query->whereDate('visit_date', $today->toDateString());
+                break;
+
+            case 'tomorrow':
+                $tomorrow = Carbon::tomorrow();
+                $query->whereDate('visit_date', $tomorrow->toDateString());
+                break;
+
+            case 'range':
+                $query->whereBetween('visit_date', [
+                    $fromDate->toDateString(),
+                    $toDate->toDateString(),
+                ]);
+                break;
+
+            case 'all_unprinted':
+                // 条件なし（printed_at が null のすべて）
+                break;
+        }
+
+        $reservations = $query
+            ->orderBy('visit_date')
+            ->orderBy('visit_time')
+            ->get();
+
+        if ($reservations->isEmpty()) {
+            return back()->with('status', '条件に合致する未印刷の予約はありません。');
+        }
+
+        // ★ 印刷日時 & 印刷者を一括更新
+        $userId = Auth::id();
+
+        DB::transaction(function () use ($reservations, $userId) {
+            $now = now();
+            foreach ($reservations as $reservation) {
+                $reservation->printed_at      = $now;
+                $reservation->printed_user_id = $userId;
+                $reservation->save();
+            }
+        });
+
+        // ★ まとめて1つのPDFにする
+        $pdf = Pdf::loadView('reservations.batch_pdf', [
+            'reservations' => $reservations,
+        ])
+            ->setPaper('A4', 'portrait');
+
+        $fileName = 'reservation_slips_'
+            . now()->format('Ymd_His')
+            . '.pdf';
+
+        return $pdf->download($fileName);
     }
 
 }

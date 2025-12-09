@@ -28,6 +28,7 @@ class Reservation extends Model
         'token',
         'build_number',
         'printed_user_id',
+        'printed_at',
         'created_by',
         'updated_by',
     ];
@@ -38,6 +39,7 @@ class Reservation extends Model
         'return_date'       => 'date',
         'is_last_day_night' => 'boolean',
         'is_terms_agreed'   => 'boolean',
+        'printed_at'  => 'datetime',
     ];
 
     /**

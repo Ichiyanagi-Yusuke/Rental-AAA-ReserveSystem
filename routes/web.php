@@ -77,9 +77,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reservations/{reservation}', [ReservationController::class, 'show'])
         ->name('reservations.show');
 
-    // ★ 予約帳票PDF
+    // ★ 予約帳票PDF 1件
     Route::get('/reservations/{reservation}/pdf', [ReservationController::class, 'downloadPdf'])
         ->name('reservations.pdf');
+
+    // ★ 貸出票印刷（フォーム表示 & 実行）
+    Route::get('/reservation-prints', [ReservationController::class, 'printForm'])
+        ->name('reservations.print.form');
+    Route::post('/reservation-prints', [ReservationController::class, 'printExecute'])
+        ->name('reservations.print.execute');
 
 
 });

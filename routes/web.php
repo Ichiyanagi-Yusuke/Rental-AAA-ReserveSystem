@@ -77,6 +77,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reservations/{reservation}', [ReservationController::class, 'show'])
         ->name('reservations.show');
 
+    // ★ 予約帳票PDF
+    Route::get('/reservations/{reservation}/pdf', [ReservationController::class, 'downloadPdf'])
+        ->name('reservations.pdf');
+
 
 });
 

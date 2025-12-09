@@ -10,6 +10,8 @@ use App\Http\Controllers\GearItemController;
 use App\Http\Controllers\RentalMenuComponentController;
 use App\Http\Controllers\RentalMenuCategoryController;
 use App\Http\Controllers\GearItemCategoryController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ReservationDetailController;
 
 Route::get('/', function () {
     // 未ログインなら login / ログイン済みなら dashboard
@@ -32,6 +34,50 @@ Route::middleware(['auth'])->group(function () {
    
     // マスタ一覧ページ
     Route::view('/masters', 'masters.index')->name('masters.index');
+
+    // 予約一覧
+    Route::get('/reservations', [ReservationController::class, 'index'])
+        ->name('reservations.index');
+
+    Route::get('/reservations/create', [ReservationController::class, 'startCreate'])
+        ->name('reservations.create');
+
+    // ステップ1：ヘッダー入力
+    Route::get('/reservations/create/header', [ReservationController::class, 'createHeader'])
+        ->name('reservations.create.header');
+    Route::post('/reservations/create/header', [ReservationController::class, 'storeHeader'])
+        ->name('reservations.store.header');
+
+    // ステップ2：詳細入力（利用者複数）
+    Route::get('/reservations/create/details', [ReservationController::class, 'createDetails'])
+        ->name('reservations.create.details');
+    Route::post('/reservations/create/details', [ReservationController::class, 'storeDetails'])
+        ->name('reservations.store.details');
+
+    // ✅ 確認画面
+    Route::get('/reservations/confirm', [ReservationController::class, 'confirm'])
+        ->name('reservations.confirm');
+
+    // ✅ 本登録（DBへ保存）
+    Route::post('/reservations/store', [ReservationController::class, 'store'])
+        ->name('reservations.store');
+
+    // 利用者詳細
+    Route::get('/reservations/{reservation}/details/{detail}', [ReservationDetailController::class, 'show'])
+        ->name('reservations.details.show');
+
+    // 利用者削除（詳細画面からのみ）
+    Route::delete('/reservations/details/{detail}', [ReservationDetailController::class, 'destroy'])
+        ->name('reservations.details.destroy');
+
+    // ✅ 一覧画面
+    Route::get('/reservations', [ReservationController::class, 'index'])
+        ->name('reservations.index');
+
+    Route::get('/reservations/{reservation}', [ReservationController::class, 'show'])
+        ->name('reservations.show');
+
+
 });
 
 // マスタ管理用（role 0,1 のみ）

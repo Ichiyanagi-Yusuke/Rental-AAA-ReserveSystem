@@ -16,6 +16,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsPostController;
 use App\Http\Controllers\PublicNewsController;
 use App\Http\Controllers\DataAnalysisController;
+use App\Http\Controllers\ClientReservationEditController;
 
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -39,8 +40,32 @@ Route::get('/reservation/confirm', [ClientReservationController::class, 'confirm
 Route::post('/reservation/store', [ClientReservationController::class, 'store'])->name('client.reservation.store');
 Route::get('/reservation/success', [ClientReservationController::class, 'success'])->name('client.reservation.success');
 Route::get('/reservation/error', [ClientReservationController::class, 'error'])->name('client.reservation.error');
-Route::get('/reservation/edit-header', [ClientReservationController::class, 'editHeader'])->name('client.reservation.edit.header');
-Route::get('/reservation/edit-detail', [ClientReservationController::class, 'editDetail'])->name('client.reservation.edit.detail');
+// Route::get('/reservation/edit-header', [ClientReservationController::class, 'editHeader'])->name('client.reservation.edit.header');
+// Route::get('/reservation/edit-detail', [ClientReservationController::class, 'editDetail'])->name('client.reservation.edit.detail');
+
+
+// ★追加する（正しい予約変更用ルート）★
+Route::prefix('reservation/edit')->name('client.reservation.edit.')->group(function () {
+    // 1. 本人確認（トークン付きURLから遷移）
+    Route::get('/auth/{token}', [ClientReservationEditController::class, 'showAuth'])->name('auth');
+    Route::post('/auth', [ClientReservationEditController::class, 'verifyAuth'])->name('auth.verify');
+
+    // 2. 修正内容選択（メニュー）
+    Route::get('/menu', [ClientReservationEditController::class, 'menu'])->name('menu');
+
+    // 3. 代表者情報の編集
+    Route::get('/header', [ClientReservationEditController::class, 'editHeader'])->name('header');
+    Route::post('/header', [ClientReservationEditController::class, 'updateHeader'])->name('header.update');
+
+    // 4. 利用者情報の編集
+    Route::get('/detail/{detail}', [ClientReservationEditController::class, 'editDetail'])->name('detail');
+    Route::post('/detail/{detail}', [ClientReservationEditController::class, 'updateDetail'])->name('detail.update');
+
+    // 5. 変更完了処理
+    Route::post('/complete', [ClientReservationEditController::class, 'complete'])->name('complete');
+    Route::get('/finished', [ClientReservationEditController::class, 'finished'])->name('finished');
+});
+
 
 Route::get('/', function () {
     // 未ログインなら login / ログイン済みなら dashboard

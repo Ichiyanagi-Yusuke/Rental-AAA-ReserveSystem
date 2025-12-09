@@ -25,6 +25,22 @@ Route::get('/home/calendar', [HomeController::class, 'calendar'])->name('client.
 Route::get('/home/news', [PublicNewsController::class, 'index'])->name('client.news.index');
 Route::get('/home/news/{id}', [PublicNewsController::class, 'show'])->name('client.news.show');
 
+// クライアント向け予約ページ
+use App\Http\Controllers\ClientReservationController;
+
+Route::get('/reservation/agree', [ClientReservationController::class, 'agree'])->name('client.reservation.agree');
+Route::post('/reservation/agree', [ClientReservationController::class, 'storeAgree'])->name('client.reservation.agree.store');
+Route::get('/reservation/header', [ClientReservationController::class, 'header'])->name('client.reservation.header');
+Route::post('/reservation/header', [ClientReservationController::class, 'storeHeader'])->name('client.reservation.header.store');
+Route::get('/reservation/detail', [ClientReservationController::class, 'detail'])->name('client.reservation.detail');
+Route::post('/reservation/detail', [ClientReservationController::class, 'storeDetail'])->name('client.reservation.detail.store');
+Route::get('/reservation/confirm', [ClientReservationController::class, 'confirm'])->name('client.reservation.confirm');
+Route::post('/reservation/store', [ClientReservationController::class, 'store'])->name('client.reservation.store');
+Route::get('/reservation/success', [ClientReservationController::class, 'success'])->name('client.reservation.success');
+Route::get('/reservation/error', [ClientReservationController::class, 'error'])->name('client.reservation.error');
+Route::get('/reservation/edit-header', [ClientReservationController::class, 'editHeader'])->name('client.reservation.edit.header');
+Route::get('/reservation/edit-detail', [ClientReservationController::class, 'editDetail'])->name('client.reservation.edit.detail');
+
 Route::get('/', function () {
     // 未ログインなら login / ログイン済みなら dashboard
     return auth()->check()

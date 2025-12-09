@@ -110,6 +110,40 @@
                         印刷済みの予約には印刷日時と印刷者が記録され、次回以降の対象外になります。
                     </div>
                 </a>
+
+                {{-- ブログ・お知らせ管理カード --}}
+                <a href="{{ route('news-posts.index') }}"
+                    class="flex flex-col justify-between bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 hover:shadow-md hover:border-green-200 transition">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-900">
+                                ブログ・お知らせ管理
+                            </h3>
+                            <p class="mt-1 text-xs text-gray-500">
+                                HPに掲載するニュースやブログ記事を作成・編集します。
+                            </p>
+                        </div>
+                        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-green-50">
+                            <svg class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs">
+                        <span class="inline-flex items-center rounded-full px-2.5 py-1 bg-gray-100 text-gray-600">
+                            {{ \App\Models\NewsPost::count() }} 件の記事
+                        </span>
+                        <span class="inline-flex items-center text-green-600 font-medium">
+                            編集する
+                            <svg class="ml-1 h-3 w-3" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </span>
+                    </div>
+                </a>
                 {{-- 今後、他機能のカードをここに増やしていける --}}
             </div>
         </div>

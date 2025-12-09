@@ -12,16 +12,18 @@ use App\Http\Controllers\RentalMenuCategoryController;
 use App\Http\Controllers\GearItemCategoryController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReservationDetailController;
-
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsPostController;
+use App\Http\Controllers\PublicNewsController;
+
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/home/pricing', [HomeController::class, 'pricing'])->name('client.pricing');
 Route::get('/home/calendar', [HomeController::class, 'calendar'])->name('client.calendar');
-Route::get('/home/news', [HomeController::class, 'news'])->name('client.news');
-Route::get('/home/news/1', [HomeController::class, 'news1'])->name('client.news1');
-Route::get('/home/news/2', [HomeController::class, 'news2'])->name('client.news2');
-Route::get('/home/news/3', [HomeController::class, 'news3'])->name('client.news3');
+
+
+Route::get('/home/news', [PublicNewsController::class, 'index'])->name('client.news.index');
+Route::get('/home/news/{id}', [PublicNewsController::class, 'show'])->name('client.news.show');
 
 Route::get('/', function () {
     // 未ログインなら login / ログイン済みなら dashboard
@@ -97,6 +99,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reservation-prints', [ReservationController::class, 'printExecute'])
         ->name('reservations.print.execute');
 
+    Route::resource('news-posts', NewsPostController::class);
 
 });
 

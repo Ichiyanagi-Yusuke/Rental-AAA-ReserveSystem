@@ -1,0 +1,662 @@
+@charset "UTF-8";
+
+/* =========================================
+   client-top.css
+   トップページ専用スタイル
+   ========================================= */
+
+/* ローディング画面 */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.loading-screen.loaded { opacity: 0; visibility: hidden; }
+.loading-content { text-align: center; animation: fadeInScale 0.8s ease; }
+
+.loading-logo { margin-bottom: 3rem; animation: logoFloat 2s ease-in-out infinite; }
+.loading-logo img {
+    max-width: 400px;
+    width: 80%;
+    height: auto;
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+}
+
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.spinner-bar {
+    width: 4px;
+    height: 40px;
+    background: #ff0000;
+    animation: spinnerPulse 1.2s ease-in-out infinite;
+}
+
+.spinner-bar:nth-child(1) { animation-delay: 0s; }
+.spinner-bar:nth-child(2) { animation-delay: 0.15s; }
+.spinner-bar:nth-child(3) { animation-delay: 0.3s; }
+
+.loading-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 4px;
+    color: #ffffff;
+    opacity: 0.7;
+    animation: textPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes spinnerPulse {
+    0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
+    50% { transform: scaleY(1); opacity: 1; }
+}
+
+@keyframes logoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes textPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+}
+
+/* ヒーローセクション */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-slideshow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+/* スライド画像設定はBlade側でインラインスタイルで指定されるか、別途定義 */
+.hero-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    animation: slideshow 25s infinite;
+}
+
+.hero-slide:nth-child(1) { animation-delay: 0s; }
+.hero-slide:nth-child(2) { animation-delay: 5s; }
+.hero-slide:nth-child(3) { animation-delay: 10s; }
+.hero-slide:nth-child(4) { animation-delay: 15s; }
+.hero-slide:nth-child(5) { animation-delay: 20s; }
+
+@keyframes slideshow {
+    0% { opacity: 0; transform: scale(1); }
+    4% { opacity: 1; }
+    20% { opacity: 1; transform: scale(1.05); }
+    24% { opacity: 0; }
+    100% { opacity: 0; transform: scale(1.05); }
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.4) 100%);
+    z-index: 1;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: var(--white);
+    animation: fadeInUp 1s ease;
+}
+
+.hero-logo-image {
+    max-width: 600px;
+    width: 80%;
+    height: auto;
+    margin-bottom: 3rem;
+    filter: drop-shadow(3px 3px 8px rgba(0, 0, 0, 0.3));
+    animation: fadeInUp 1s ease 0.3s both;
+}
+
+.hero-catchphrase {
+    font-size: 1.8rem;
+    font-weight: 300;
+    line-height: 1.8;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--white);
+    z-index: 3;
+    animation: fadeIn 1s ease 1.5s both;
+}
+
+.scroll-line {
+    width: 2px;
+    height: 50px;
+    background: linear-gradient(to bottom, transparent, var(--white));
+    position: relative;
+    overflow: hidden;
+}
+
+.scroll-line::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 30px;
+    background: var(--white);
+    animation: scrollDown 2s ease-in-out infinite;
+}
+
+@keyframes scrollDown {
+    0% { top: -30px; opacity: 0; }
+    50% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.scroll-text {
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    font-weight: 600;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+.scroll-indicator:hover .scroll-text { color: var(--primary-red); }
+
+/* セクション共通 */
+section { padding: 6rem 0; }
+
+.section-header { text-align: center; margin-bottom: 4rem; }
+
+.section-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text-gray);
+    margin-top: 0.5rem;
+    letter-spacing: 0.5px;
+}
+
+.section-title {
+    font-size: 4rem;
+    font-weight: 900;
+    font-family: 'Oswald', sans-serif;
+    color: var(--black);
+    letter-spacing: 4px;
+    margin: 0;
+    line-height: 1.1;
+    text-transform: uppercase;
+    padding-bottom: 1rem;
+    border-bottom: 4px solid var(--primary-red);
+    display: inline-block;
+}
+
+/* ABOUTセクション */
+.about { background: var(--white); }
+.about-content { max-width: 900px; margin: 0 auto; }
+.about-text p {
+    font-size: 1.1rem;
+    color: var(--text-gray);
+    margin: 0 1.6rem 1.5em;
+    line-height: 1.8;
+}
+
+.about-features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.feature-item {
+    background: var(--white);
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    border-left: 5px solid var(--primary-red);
+}
+
+.feature-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -5px; width: 5px; height: 0;
+    background: var(--dark-red);
+    transition: height 0.4s ease;
+    z-index: 2;
+}
+
+.feature-item:hover::before { height: 100%; }
+.feature-item:hover { transform: translateY(-8px); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15); }
+
+.feature-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: var(--light-gray);
+    position: relative;
+}
+
+.feature-image::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; width: 0; height: 4px;
+    background: var(--primary-red);
+    transition: width 0.4s ease;
+}
+
+.feature-item:hover .feature-image::after { width: 100%; }
+
+.feature-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.feature-item:hover .feature-image img { transform: scale(1.1); }
+
+.feature-content { padding: 1.5rem; text-align: center; position: relative; }
+
+.feature-content::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 30px; height: 3px;
+    background: var(--primary-red);
+}
+
+.feature-content h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    margin-top: 0.8rem;
+    color: var(--black);
+}
+
+.feature-content p { font-size: 0.9rem; color: var(--text-gray); line-height: 1.6; }
+
+/* レンタル料金セクション */
+.pricing { background: var(--light-gray); }
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.pricing-card {
+    background: linear-gradient(135deg, var(--white) 0%, #f8f8f8 100%);
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    border-top: 4px solid var(--black);
+}
+
+.pricing-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, transparent 0%, rgba(255, 0, 0, 0.03) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.pricing-card:hover::before { opacity: 1; }
+.pricing-card:hover { transform: translateY(-8px); box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15); }
+
+.pricing-card.featured {
+    border-top: 4px solid var(--primary-red);
+    transform: scale(1.03);
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+}
+
+.pricing-card.featured::after {
+    content: '';
+    position: absolute;
+    top: -2px; right: -2px; width: 0; height: 0;
+    border-style: solid; border-width: 0 60px 60px 0;
+    border-color: transparent var(--primary-red) transparent transparent;
+}
+
+.pricing-header {
+    background: linear-gradient(135deg, var(--black) 0%, #2a2a2a 100%);
+    color: var(--white);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.pricing-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.pricing-card:hover .pricing-header::before { left: 100%; }
+.pricing-card.featured .pricing-header { background: linear-gradient(135deg, var(--primary-red) 0%, #c00 100%); }
+
+.pricing-header h3 { font-size: 1.3rem; margin-bottom: 0.4rem; font-family: 'Oswald', sans-serif; letter-spacing: 1px; }
+
+.pricing-badge {
+    display: inline-block;
+    padding: 0.2rem 0.8rem;
+    background: var(--primary-red);
+    border-radius: 0;
+    font-size: 0.75rem;
+    margin-top: 0.3rem;
+    position: relative;
+    z-index: 1;
+}
+
+.pricing-card.featured .pricing-badge { background: var(--white); color: var(--primary-red); font-weight: 600; }
+
+.pricing-body { padding: 1.5rem 1rem; position: relative; background: var(--white); }
+
+.price {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-gray);
+    position: relative;
+}
+
+.price::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 50%; transform: translateX(-50%);
+    width: 50px; height: 2px;
+    background: var(--primary-red);
+}
+
+.price-amount {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-red);
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 1px;
+}
+
+.price-period { font-size: 1rem; color: var(--text-gray); font-weight: 500; }
+
+.pricing-features { list-style: none; margin-bottom: 0; }
+
+.pricing-features li {
+    padding: 0.7rem 0.5rem;
+    border-bottom: 1px solid var(--border-gray);
+    color: var(--text-gray);
+    font-size: 0.95rem;
+    position: relative;
+    padding-left: 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.pricing-features li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--primary-red);
+    font-weight: bold;
+}
+
+.pricing-features li:hover { padding-left: 1.8rem; color: var(--black); }
+.pricing-features li:last-child { border-bottom: none; }
+
+.pricing-detail-link { text-align: center; margin-top: 3rem; }
+
+.btn-pricing-detail {
+    display: inline-block;
+    padding: 1.2rem 3rem;
+    padding-right: 3.5rem;
+    background: var(--primary-red);
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-pricing-detail::after {
+    content: '▶︎';
+    position: absolute;
+    right: 1.5rem; top: 50%; transform: translateY(-50%);
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.btn-pricing-detail:hover {
+    background: var(--dark-red);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4);
+}
+
+.btn-pricing-detail:hover::after {
+    right: 1.2rem;
+    animation: arrowSlide 0.6s ease-in-out infinite;
+}
+
+/* アクセスセクション */
+.access { background: var(--white); }
+.access-content { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: stretch; }
+
+.access-info {
+    display: flex;
+    flex-direction: column;
+    background: var(--light-gray);
+    padding: 2.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.access-info h3 { font-size: 1.8rem; margin-bottom: 2rem; color: var(--black); }
+.access-info-tips { font-size: 0.7rem !important; }
+.info-item { margin-bottom: 1.5rem; }
+.info-item:last-child { margin-bottom: 0; }
+
+.info-item strong {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 0.5rem;
+}
+
+.info-item p { color: var(--text-gray); line-height: 1.8; font-size: 1rem; }
+.access-map { background: var(--light-gray); border-radius: 0; overflow: hidden; height: 100%; min-height: 500px; }
+
+.map-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.map-placeholder iframe { width: 100%; height: 100%; }
+
+/* NEWS&BLOGセクション */
+.news { background: var(--light-gray); }
+.news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+
+.news-card {
+    background: var(--white);
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    position: relative;
+    border-top: 4px solid var(--primary-red);
+}
+
+.news-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 0; height: 4px;
+    background: var(--dark-red);
+    transition: width 0.4s ease;
+    z-index: 2;
+}
+
+.news-card:hover::before { width: 100%; }
+.news-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); }
+.news-card:hover .news-content h3 { text-decoration: underline; }
+
+.news-image {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%);
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.news-image::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; width: 0; height: 0;
+    border-style: solid; border-width: 0 50px 50px 0;
+    border-color: transparent var(--primary-red) transparent transparent;
+    opacity: 0.9;
+}
+
+.news-content { padding: 1.5rem; position: relative; }
+
+.news-content::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 1.5rem; width: 40px; height: 3px;
+    background: var(--primary-red);
+}
+
+.news-date { font-size: 0.9rem; color: var(--text-gray); margin-right: 1rem; }
+.news-category {
+    display: inline-block;
+    padding: 0.2rem 0.8rem;
+    background: var(--primary-red);
+    color: var(--white);
+    font-size: 0.8rem;
+    border-radius: 0;
+}
+
+.news-content h3 { font-size: 1.2rem; margin: 1rem 0 0.5rem; color: var(--black); }
+.news-content p { font-size: 0.9rem; color: var(--text-gray); line-height: 1.6; }
+
+/* レスポンシブ (トップ用) */
+@media (max-width: 1024px) {
+    .about-features { grid-template-columns: 1fr; padding: 0 1.5rem; gap: 2.5rem; }
+    .feature-item { max-width: 500px; margin: 0 auto; }
+    .pricing-grid { grid-template-columns: repeat(3, 1fr); gap: 1rem; max-width: 100%; }
+    .pricing-card.featured { transform: scale(1); }
+    .access-content { grid-template-columns: 1fr; gap: 2rem; }
+    .access-map { min-height: 400px; }
+    .news-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .loading-logo img { max-width: 280px; }
+    .spinner-bar { width: 3px; height: 30px; }
+    .loading-text { font-size: 0.9rem; }
+    
+    .about-text p { font-size: 0.9rem; }
+    .hero { min-height: 100vh; background-attachment: scroll; }
+    .hero-logo-image { max-width: 400px; width: 90%; margin-bottom: 2rem; }
+    .hero-catchphrase { font-size: 1.2rem; }
+    .scroll-indicator { bottom: 2rem; }
+    .scroll-line { height: 40px; }
+    
+    section { padding: 4rem 0; }
+    .section-title { font-size: 2.5rem; letter-spacing: 2px; }
+    .section-label { font-size: 0.9rem; }
+    .container { padding: 0 1rem; }
+    
+    .pricing-grid { grid-template-columns: 1fr; gap: 1.5rem; max-width: 400px; }
+    .pricing-card { display: flex; flex-direction: column; }
+    .pricing-header { padding: 1.5rem; }
+    .pricing-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .pricing-features { flex: 1; }
+    
+    .access-info { padding: 1.5rem; }
+    .news-grid { padding: 0 1.5rem; gap: 2.5rem; }
+    .news-card { margin: 0 auto; max-width: 500px; }
+    .access-map { min-height: 350px; }
+}
+
+@media (max-width: 480px) {
+    .loading-logo img { max-width: 220px; }
+    .spinner-bar { width: 2px; height: 25px; }
+    .loading-text { font-size: 0.8rem; letter-spacing: 3px; }
+    
+    .hero-logo-image { max-width: 300px; width: 85%; margin-bottom: 1.5rem; }
+    .scroll-indicator { bottom: 1.5rem; }
+    .scroll-line { height: 35px; }
+    .section-title { font-size: 2rem; letter-spacing: 1.5px; }
+    
+    .about-features { padding: 0 1rem; gap: 2rem; }
+    .feature-item { max-width: 100%; }
+    .feature-image { height: 180px; }
+    
+    .pricing-grid { max-width: 320px; }
+    .access-map { min-height: 300px; }
+    .news-grid { padding: 0 1rem; gap: 2rem; }
+}

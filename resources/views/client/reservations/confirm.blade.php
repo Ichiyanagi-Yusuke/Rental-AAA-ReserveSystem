@@ -386,9 +386,8 @@
                                         （Jr）
                                     @endif
                                 </span>
-                                <a href="{{ route('client.reservation.edit.detail', ['index' => $index]) }}"
-                                    class="edit-guest-btn"
-                                    onclick="event.stopPropagation();">
+                                <a href="{{ route('client.reservation.ss-edit.detail', ['index' => $index]) }}"
+                                    class="edit-guest-btn" onclick="event.stopPropagation();">
                                     修正
                                 </a>
                             </label>

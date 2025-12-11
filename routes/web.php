@@ -17,6 +17,7 @@ use App\Http\Controllers\NewsPostController;
 use App\Http\Controllers\PublicNewsController;
 use App\Http\Controllers\DataAnalysisController;
 use App\Http\Controllers\ClientReservationEditController;
+use App\Http\Controllers\ClientReservationCancelController;
 
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -40,9 +41,17 @@ Route::get('/reservation/confirm', [ClientReservationController::class, 'confirm
 Route::post('/reservation/store', [ClientReservationController::class, 'store'])->name('client.reservation.store');
 Route::get('/reservation/success', [ClientReservationController::class, 'success'])->name('client.reservation.success');
 Route::get('/reservation/error', [ClientReservationController::class, 'error'])->name('client.reservation.error');
-// Route::get('/reservation/edit-header', [ClientReservationController::class, 'editHeader'])->name('client.reservation.edit.header');
-// Route::get('/reservation/edit-detail', [ClientReservationController::class, 'editDetail'])->name('client.reservation.edit.detail');
 
+Route::get('/reservation/ss-edit-header', [ClientReservationController::class, 'editHeader'])->name('client.reservation.ss-edit.header');
+Route::get('/reservation/ss-edit-detail', [ClientReservationController::class, 'editDetail'])->name('client.reservation.ss-edit.detail');
+
+// 予約キャンセル機能
+Route::prefix('reservation/cancel')->name('client.reservation.cancel.')->group(function () {
+    // キャンセル確認画面 (メールのリンクからここに来る)
+    Route::get('/{token}', [ClientReservationCancelController::class, 'show'])->name('show');
+    // キャンセル実行
+    Route::post('/{token}', [ClientReservationCancelController::class, 'destroy'])->name('destroy');
+});
 
 // ★追加する（正しい予約変更用ルート）★
 Route::prefix('reservation/edit')->name('client.reservation.edit.')->group(function () {

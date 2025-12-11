@@ -14,6 +14,10 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 
+// 既存のuseの下に追加
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReservationCompleted;
+
 class ClientReservationController extends Controller
 {
     // 同意画面
@@ -455,6 +459,17 @@ class ClientReservationController extends Controller
         DB::beginTransaction();
 
         try {
+
+            // ▼▼▼ 追加：来店日ごとの連番(build_number)を算出 ▼▼▼
+            // 排他制御(lockForUpdate)を行い、同時アクセスの重複を防ぎつつ最大値を取得
+            $currentMax = Reservation::where('visit_date', $header['reserve_date'])
+                ->lockForUpdate()
+                ->max('build_number');
+
+            // 最大値があれば+1、なければ1番とする
+            $nextBuildNumber = $currentMax ? $currentMax + 1 : 1;
+            // ▲▲▲ 追加ここまで ▲▲▲
+
             $token = (string)Str::uuid();
 
             // 予約ヘッダ登録
@@ -473,6 +488,7 @@ class ClientReservationController extends Controller
                 'note'                  => $header['comment'] ?? '',
                 'is_terms_accepted'     => true,
                 'token'                 => $token,
+                'build_number'          => $nextBuildNumber,
                 'assembly_seq'          => null,
                 'printed_user_id'       => null,
                 'printed_at'            => null,
@@ -507,6 +523,8 @@ class ClientReservationController extends Controller
             }
 
             DB::commit();
+
+            Mail::to($reservation->email)->send(new ReservationCompleted($reservation));
 
             // セッションクリア
             session()->forget('client_reservation.header');

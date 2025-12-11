@@ -54,7 +54,7 @@
                         BLOG</span><span class="menu-sub">お知らせ/ブログ</span></a></li>
         </ul>
         <div class="side-menu-reservation">
-            <a href="https://takasuaaa.xsrv.jp/reservation/agree" class="btn-side-reservation">予約する</a>
+            <a href="{{ route('client.reservation.agree') }}" class="btn-side-reservation">予約する</a>
         </div>
     </div>
 
@@ -72,7 +72,7 @@
         </div>
     </section>
 
-    <a href="https://takasuaaa.xsrv.jp/reservation/agree" class="btn-floating-reservation" id="floatingReservation">
+    <a href="{{ route('client.reservation.agree') }}" class="btn-floating-reservation" id="floatingReservation">
         <span class="btn-floating-icon">
             <img src="{{ asset('images/client/reserve-icon.svg') }}" alt="予約アイコン">
         </span>

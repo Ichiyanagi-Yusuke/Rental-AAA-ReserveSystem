@@ -10,6 +10,8 @@ use App\Models\Resort;
 use App\Models\RentalMenuCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReservationUpdated;
 
 class ClientReservationEditController extends Controller
 {
@@ -238,8 +240,9 @@ class ClientReservationEditController extends Controller
             $reservation->save();
         }
 
-        // TODO: メール送信処理をここに実装
-        // Mail::to($reservation->email)->send(new ReservationUpdated($reservation));
+        // ▼▼▼ 修正：メール送信処理を実装 ▼▼▼
+        Mail::to($reservation->email)->send(new ReservationUpdated($reservation));
+        // ▲▲▲ 修正ここまで ▲▲▲
 
         // セッションクリア（必要に応じて）
         session()->forget('editing_reservation_id');

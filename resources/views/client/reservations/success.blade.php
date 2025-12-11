@@ -235,7 +235,7 @@
         </div>
 
         <div class="button-container">
-            <a href="https://rental-aaa.jp" class="btn">TOPへ戻る</a>
+            <a href="{{ route('home') }}" class="btn">TOPへ戻る</a>
         </div>
     </div>
 </body>

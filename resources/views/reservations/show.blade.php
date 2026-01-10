@@ -31,6 +31,41 @@
                 </div>
             @endif
 
+            {{-- ▼ 追加: 変更確認アラートとボタン --}}
+            @if ($reservation->is_needs_confirmation)
+                <div
+                    class="bg-red-50 border-l-4 border-red-500 p-4 shadow-sm rounded-r-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-800">予約内容が変更されています</h3>
+                            <div class="mt-1 text-sm text-red-700">
+                                <p>お客様によって予約内容が更新されました。変更内容を確認し、問題なければ「変更を確認済みにする」ボタンを押してください。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form action="{{ route('reservations.verify', $reservation->id) }}" method="POST">
+                        @csrf
+                        <button type="submit"
+                            class="whitespace-nowrap inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            <svg class="mr-2 -ml-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            変更を確認済みにする
+                        </button>
+                    </form>
+                </div>
+            @endif
+            {{-- ▲ 追加ここまで --}}
+
             {{-- ■基本情報セクション（お客様入力項目） --}}
             <div class="bg-white shadow-sm sm:rounded-lg p-4 sm:p-6">
                 <div class="border-b border-gray-200 pb-2 mb-4">
@@ -199,8 +234,8 @@
                                     <span
                                         class="hidden sm:inline bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs">{{ $detail->mainGearMenu->name }}</span>
                                 @endif
-                                <svg x-show="!open" class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                                <svg x-show="!open" class="w-4 h-4 text-gray-400" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M19 9l-7 7-7-7" />
                                 </svg>

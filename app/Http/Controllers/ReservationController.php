@@ -49,6 +49,8 @@ class ReservationController extends Controller
         // ★ 追加: 特定日付指定 (?date=2025-12-10)
         $dateParam   = $request->query('date');
 
+        $statusParam = $request->query('status');
+
         $targetDate  = null;
         $filterLabel = null;
 
@@ -66,6 +68,13 @@ class ReservationController extends Controller
             } catch (\Exception $e) {
                 // 不正な日付形式の場合は無視
             }
+        }
+
+        // ▼ 追加: 変更確認待ちの絞り込み処理
+        if ($statusParam === 'needs_confirmation') {
+            $query->where('is_needs_confirmation', true);
+            // フィルタラベルを設定（画面上のタイトル用）
+            $filterLabel = '変更確認待ちの予約';
         }
 
         if ($targetDate) {
@@ -671,6 +680,7 @@ class ReservationController extends Controller
         // ★ 印刷記録（常に更新 or 初回のみ、好みですがここでは毎回更新）
         $reservation->printed_at      = now();
         $reservation->printed_user_id = Auth::id();
+        $reservation->is_needs_confirmation = false; // ★追加
         $reservation->save();
 
         $pdf = Pdf::loadView('reservations.pdf', [
@@ -773,6 +783,7 @@ class ReservationController extends Controller
             foreach ($reservations as $reservation) {
                 $reservation->printed_at      = $now;
                 $reservation->printed_user_id = $userId;
+                $reservation->is_needs_confirmation = false;
                 $reservation->save();
             }
         });
@@ -788,6 +799,18 @@ class ReservationController extends Controller
             . '.pdf';
 
         return $pdf->download($fileName);
+    }
+
+    public function verifyChange(Reservation $reservation)
+    {
+        if (! $this->isMasterUser()) {
+            abort(403);
+        }
+
+        $reservation->is_needs_confirmation = false;
+        $reservation->save();
+
+        return back()->with('status', '変更を確認済みにしました。');
     }
 
 }

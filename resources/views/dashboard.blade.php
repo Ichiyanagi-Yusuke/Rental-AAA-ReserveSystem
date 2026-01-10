@@ -178,6 +178,49 @@
                         </span>
                     </div>
                 </a>
+
+                {{-- ▼ 追加：予約変更通知カード --}}
+                <a href="{{ route('reservations.index', ['status' => 'needs_confirmation']) }}"
+                    class="flex flex-col justify-between bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 hover:shadow-md transition 
+                   {{ $modifiedReservations->count() > 0 ? 'border-red-200 ring-2 ring-red-50' : 'hover:border-indigo-200' }}">
+
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <h3
+                                class="text-sm font-semibold {{ $modifiedReservations->count() > 0 ? 'text-red-600' : 'text-gray-900' }}">
+                                予約変更の確認
+                            </h3>
+                            <p class="mt-1 text-xs text-gray-500">
+                                お客様によって内容が変更された予約です。内容を確認してください。
+                            </p>
+                        </div>
+                        <div
+                            class="flex h-9 w-9 items-center justify-center rounded-full {{ $modifiedReservations->count() > 0 ? 'bg-red-100' : 'bg-gray-50' }}">
+                            <svg class="h-5 w-5 {{ $modifiedReservations->count() > 0 ? 'text-red-600' : 'text-gray-400' }}"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between text-xs">
+                        <span
+                            class="inline-flex items-center rounded-full px-2.5 py-1 
+                            {{ $modifiedReservations->count() > 0 ? 'bg-red-100 text-red-700 font-bold' : 'bg-gray-100 text-gray-600' }}">
+                            {{ $modifiedReservations->count() }} 件の未確認
+                        </span>
+
+                        <span class="inline-flex items-center text-indigo-600 font-medium">
+                            確認する
+                            <svg class="ml-1 h-3 w-3" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </span>
+                    </div>
+                </a>
+                {{-- ▲ 追加ここまで --}}
                 {{-- 今後、他機能のカードをここに増やしていける --}}
             </div>
         </div>

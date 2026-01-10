@@ -244,6 +244,9 @@ class ClientReservationEditController extends Controller
         Mail::to($reservation->email)->send(new ReservationUpdated($reservation));
         // ▲▲▲ 修正ここまで ▲▲▲
 
+        $reservation->is_needs_confirmation = true;
+        $reservation->save();
+
         // セッションクリア（必要に応じて）
         session()->forget('editing_reservation_id');
 

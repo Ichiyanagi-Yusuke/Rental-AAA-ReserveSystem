@@ -560,14 +560,18 @@
         </div>
 
         <div class="button-container">
-            <a href="{{ route('client.reservation.header') }}" class="btn btn-back hide-on-mobile">戻る</a>
-            @if (request()->query('edit') !== 'single')
+            @if (request()->query('edit') !== 'single' && request()->query('from_confirm') !== 'add')
+                <a href="{{ route('client.reservation.header') }}" class="btn btn-back hide-on-mobile">戻る</a>
+            @endif
+            @if (request()->query('edit') !== 'single' && request()->query('from_confirm') !== 'add')
                 <a href="#" onclick="submitWithAction('add_guest'); return false;" id="submit-tag"
                     class="btn btn-submit">利用者を追加</a>
             @endif
             <a href="#" onclick="submitWithAction('confirm'); return false;" id="submit-tag-sub"
                 class="btn btn-submit">確認画面へ</a>
-            <a href="{{ route('client.reservation.header') }}" class="btn btn-back hide-on-desktop">戻る</a>
+            @if (request()->query('edit') !== 'single' && request()->query('from_confirm') !== 'add')
+                <a href="{{ route('client.reservation.header') }}" class="btn btn-back hide-on-desktop">戻る</a>
+            @endif
         </div>
     </div>
 

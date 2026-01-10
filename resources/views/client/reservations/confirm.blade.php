@@ -321,7 +321,7 @@
                 @csrf
 
                 <div class="info-section">
-                    <a href="{{ route('client.reservation.header') }}" class="edit-btn">修正</a>
+                    <a href="{{ route('client.reservation.header', ['from_confirm' => 'edit']) }}" class="edit-btn">修正</a>
 
                     <div class="info-item">
                         <span class="reserve-item-title">代表者名</span>
@@ -488,7 +488,7 @@
         </div>
 
         <div class="button-container">
-            <a href="{{ route('client.reservation.detail') }}" class="btn btn-back">戻る</a>
+            <a href="{{ route('client.reservation.detail', ['from_confirm' => 'add']) }}" class="btn btn-back">利用者を追加</a>
             <a href="#" onclick="document.mainform.submit(); return false;" id="submit-tag"
                 class="btn btn-submit">確定</a>
         </div>

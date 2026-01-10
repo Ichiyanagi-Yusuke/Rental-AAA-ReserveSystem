@@ -54,6 +54,18 @@ php artisan config:clear && php artisan cache:clear && php artisan view:clear
 - No tracking of creator (stores NULL)
 - Multi-step flow: Agree → Header → Detail → Confirm → Store → Success/Error
 
+**ClientReservationEdit** (`ClientReservationEditController`):
+- Token-based authentication (no user account needed)
+- Verifies reservation ownership via phone number + date
+- Supports editing existing reservations
+- Changes marked with `is_needs_confirmation=true` for staff approval
+
+**ClientReservationCancel** (`ClientReservationCancelController`):
+- Token-based cancellation workflow
+- Verifies ownership before allowing cancellation
+- Sets `is_cancel_needs_confirmation=true` for staff approval
+- Prevents cancellation past certain date thresholds
+
 ### Session-Based Multi-Step Forms
 
 Both reservation flows use session storage to persist data across steps:
@@ -101,8 +113,10 @@ BusinessCalendar (営業カレンダー)
 ```
 
 **Critical fields**:
-- `Reservation.token`: UUID auto-generated on creation
+- `Reservation.token`: UUID auto-generated on creation (used for public edit/cancel links)
 - `Reservation.build_number`: Sequence per day for unique identification
+- `Reservation.is_needs_confirmation`: Boolean flag for pending staff approval of edits
+- `Reservation.is_cancel_needs_confirmation`: Boolean flag for pending staff approval of cancellations
 - `RentalMenu.is_junior`: 0=adult, 1=child (key for menu switching)
 - `RentalMenu.menu_type`: 'base'=main items, 'option'=add-ons
 - `ReservationDetail.group_sequence`: Order within reservation (1, 2, 3...)
@@ -193,6 +207,31 @@ Route::post('/reservation-prints', [ReservationController::class, 'printExecute'
 - Batch printing queries unprinted reservations (`whereNull('printed_at')`)
 - Loads Japanese font from `storage/fonts/ipaexg.ttf`
 - PDF views in `resources/views/reservations/pdf.blade.php`
+
+### Token-Based Public Access
+
+Client reservations use UUID tokens for secure public access without authentication:
+
+**Pattern**:
+```php
+// Token auto-generated on reservation creation
+$reservation->token = Str::uuid();
+
+// Public edit URL: /reservation/edit/{token}
+// Public cancel URL: /reservation/cancel/{token}
+```
+
+**Verification workflow**:
+1. User receives token via email after booking
+2. Accesses edit/cancel page via token link
+3. Verifies ownership by entering phone number + reservation date
+4. Makes changes, which are marked for staff approval
+5. Staff reviews and approves via dashboard
+
+**Security**:
+- Token is UUID (not sequential or guessable)
+- Requires phone + date match for verification
+- Changes flagged for manual approval before taking effect
 
 ## Important Patterns and Conventions
 
@@ -314,14 +353,23 @@ All client-facing views must be responsive:
    - Form uses numeric IDs (1, 2)
    - Views use hardcoded array mapping
 
+7. **Approval Workflow**:
+   - Edits/cancels from public portal require staff approval
+   - Dashboard shows pending confirmations
+   - Approval routes: `/reservations/{id}/verify` and `/reservations/{id}/verify-cancel`
+   - No notification system yet - staff must check dashboard regularly
+
 ## File Structure Highlights
 
 ```
 app/Http/Controllers/
-├── ReservationController.php          # Admin reservation CRUD
-├── ClientReservationController.php    # Public reservation flow
-├── BusinessCalendarController.php     # Calendar management
-├── RentalMenuController.php           # Menu CRUD
+├── ReservationController.php              # Admin reservation CRUD
+├── ClientReservationController.php        # Public reservation flow
+├── ClientReservationEditController.php    # Token-based public editing
+├── ClientReservationCancelController.php  # Token-based cancellation
+├── BusinessCalendarController.php         # Calendar management
+├── RentalMenuController.php               # Menu CRUD
+├── DataAnalysisController.php             # Analytics and reporting
 └── ...other master controllers
 
 app/Models/
@@ -366,3 +414,7 @@ When making changes, verify:
 10. ✓ Role middleware prevents unauthorized access
 11. ✓ Responsive design works on mobile (320px-768px)
 12. ✓ Step On checkbox shows only for snowboard selections
+13. ✓ Token-based edit/cancel links work without authentication
+14. ✓ Phone+date verification prevents unauthorized access
+15. ✓ Changes flagged for approval appear in dashboard
+16. ✓ Staff can approve/reject pending changes

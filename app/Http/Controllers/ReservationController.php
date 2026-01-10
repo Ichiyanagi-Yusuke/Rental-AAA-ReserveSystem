@@ -703,7 +703,7 @@ class ReservationController extends Controller
         $reservation->is_needs_confirmation = false; // ★追加
         $reservation->save();
 
-        $pdf = Pdf::loadView('reservations.pdf', [
+        $pdf = Pdf::loadView('reservations.bill_for_reserve', [
             'reservation' => $reservation,
             'details'     => $reservation->details,
         ])
@@ -809,7 +809,7 @@ class ReservationController extends Controller
         });
 
         // ★ まとめて1つのPDFにする
-        $pdf = Pdf::loadView('reservations.batch_pdf', [
+        $pdf = Pdf::loadView('reservations.bill_for_reserves', [
             'reservations' => $reservations,
         ])
             ->setPaper('A4', 'portrait');

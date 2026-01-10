@@ -94,7 +94,13 @@ Route::get('/dashboard', function () {
         ->orderBy('updated_at', 'desc')
         ->get();
 
-    return view('dashboard', compact('modifiedReservations'));
+    // ▼ 追加: キャンセル確認待ち（印刷済み かつ 論理削除済み かつ 確認フラグON）
+    $cancelledReservations = Reservation::onlyTrashed()
+        ->where('is_cancel_needs_confirmation', true)
+        ->orderBy('deleted_at', 'desc')
+        ->get();
+
+    return view('dashboard', compact('modifiedReservations', 'cancelledReservations'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
@@ -148,7 +154,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('reservations.index');
 
     Route::get('/reservations/{reservation}', [ReservationController::class, 'show'])
-        ->name('reservations.show');
+        ->name('reservations.show')
+        ->withTrashed();
 
     // ★ 予約帳票PDF 1件
     Route::get('/reservations/{reservation}/pdf', [ReservationController::class, 'downloadPdf'])
@@ -213,6 +220,10 @@ Route::middleware(['auth', 'master.role'])->group(function () {
 
     Route::post('/reservations/{reservation}/verify', [ReservationController::class, 'verifyChange'])
         ->name('reservations.verify');
+
+    // ■ キャンセル確認アクション
+    Route::post('/reservations/{id}/verify-cancel', [ReservationController::class, 'verifyCancel'])
+        ->name('reservations.verify_cancel');
 
 });
 

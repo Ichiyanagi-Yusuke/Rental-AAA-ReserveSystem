@@ -34,6 +34,7 @@ class Reservation extends Model
         'is_staff_verified',
         'version',
         'is_needs_confirmation', // 追加
+        'is_cancel_needs_confirmation',
     ];
 
     protected $casts = [
@@ -43,6 +44,7 @@ class Reservation extends Model
         'is_last_day_night' => 'boolean',
         'is_terms_agreed'   => 'boolean',
         'printed_at'  => 'datetime',
+        'is_cancel_needs_confirmation' => 'boolean',
     ];
 
     /**

@@ -31,6 +31,14 @@ class ClientReservationCancelController extends Controller
     {
         $reservation = Reservation::where('token', $token)->firstOrFail();
 
+        // ▼▼▼ 追加: 印刷済みかチェックしてフラグを立てる ▼▼▼
+        if (! is_null($reservation->printed_at)) {
+            // 印刷済みなら、スタッフ確認フラグをONにする
+            $reservation->is_cancel_needs_confirmation = true;
+            $reservation->save();
+            // ※この直後に delete() されても、DBには is_cancel_needs_confirmation=1 で残ります
+        }
+
         // 論理削除実行
         $reservation->delete();
 

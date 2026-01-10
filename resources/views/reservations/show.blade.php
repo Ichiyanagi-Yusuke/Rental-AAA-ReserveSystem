@@ -31,6 +31,45 @@
                 </div>
             @endif
 
+            {{-- ▼ 追加: キャンセル確認アラートとボタン --}}
+            @if ($reservation->trashed() && $reservation->is_cancel_needs_confirmation)
+                <div
+                    class="bg-gray-100 border-l-4 border-gray-500 p-4 shadow-sm rounded-r-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-bold text-gray-800">この予約はキャンセルされています（印刷済み）</h3>
+                            <div class="mt-1 text-sm text-gray-700">
+                                <p>帳票が出力された後にキャンセルされました。すでに準備済みの機材がある場合は棚に戻し、「回収確認済みにする」ボタンを押してください。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form action="{{ route('reservations.verify_cancel', $reservation->id) }}" method="POST">
+                        @csrf
+                        <button type="submit"
+                            class="whitespace-nowrap inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                            <svg class="mr-2 -ml-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            回収確認済みにする
+                        </button>
+                    </form>
+                </div>
+            @elseif($reservation->trashed())
+                {{-- 確認不要の単なるキャンセルの場合 --}}
+                <div class="bg-gray-100 p-4 rounded-md mb-6 text-center text-gray-500 font-bold">
+                    この予約はキャンセルされています
+                </div>
+            @endif
+            {{-- ▲ 追加ここまで --}}
+
             {{-- ▼ 追加: 変更確認アラートとボタン --}}
             @if ($reservation->is_needs_confirmation)
                 <div

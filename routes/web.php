@@ -18,6 +18,7 @@ use App\Http\Controllers\PublicNewsController;
 use App\Http\Controllers\DataAnalysisController;
 use App\Http\Controllers\ClientReservationEditController;
 use App\Http\Controllers\ClientReservationCancelController;
+use App\Models\Reservation;
 
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -83,8 +84,17 @@ Route::get('/', function () {
         : redirect()->route('login');
 });
 
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    // 確認が必要な予約を取得（更新日時が新しい順）
+    $modifiedReservations = Reservation::where('is_needs_confirmation', true)
+        ->orderBy('updated_at', 'desc')
+        ->get();
+
+    return view('dashboard', compact('modifiedReservations'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
@@ -200,6 +210,9 @@ Route::middleware(['auth', 'master.role'])->group(function () {
     // ->except(['destroy']); // destroy も使うなら except は消してOK
     Route::resource('gear-item-categories', GearItemCategoryController::class)
         ->parameters(['gear-item-categories' => 'gearItemCategory']);
+
+    Route::post('/reservations/{reservation}/verify', [ReservationController::class, 'verifyChange'])
+        ->name('reservations.verify');
 
 });
 

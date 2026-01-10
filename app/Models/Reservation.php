@@ -31,6 +31,9 @@ class Reservation extends Model
         'printed_at',
         'created_by',
         'updated_by',
+        'is_staff_verified',
+        'version',
+        'is_needs_confirmation', // 追加
     ];
 
     protected $casts = [
@@ -90,12 +93,18 @@ class Reservation extends Model
     /** 登録者 */
     public function createdByUser()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'created_by'); 
     }
 
     /** 更新者 */
     public function updatedByUser()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    // 過去の予約へのリレーション（履歴管理用）
+    public function originReservation()
+    {
+        return $this->belongsTo(Reservation::class, 'origin_reservation_id');
     }
 }

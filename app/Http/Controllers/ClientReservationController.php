@@ -128,6 +128,13 @@ class ClientReservationController extends Controller
         $validated['reserve_date'] = $visitDate;
         session(['client_reservation.header' => $validated]);
 
+        // 確認画面から遷移してきた場合は確認画面に戻る
+        if ($request->query('from_confirm') === 'edit') {
+            return redirect()
+                ->route('client.reservation.confirm')
+                ->with('status', '代表者情報を更新しました。');
+        }
+
         return redirect()
             ->route('client.reservation.detail')
             ->with('status', '代表者情報を保存しました。利用者情報を入力してください。');

@@ -238,7 +238,7 @@
         </div>
 
         <div class="form-wrapper">
-            <form action="{{ route('client.reservation.header.store') }}" method="post" id="mainform" name="mainform">
+            <form action="{{ route('client.reservation.header.store', request()->query('from_confirm') ? ['from_confirm' => request()->query('from_confirm')] : []) }}" method="post" id="mainform" name="mainform">
                 @csrf
 
                 <div class="form-group">
@@ -366,9 +366,17 @@
         </div>
 
         <div class="button-container">
-            <a href="{{ route('client.reservation.agree') }}" class="btn btn-back">戻る</a>
+            @if(request()->query('from_confirm') !== 'edit')
+                <a href="{{ route('client.reservation.agree') }}" class="btn btn-back">戻る</a>
+            @endif
             <a href="#" onclick="document.mainform.submit(); return false;" id="submit-tag"
-                class="btn btn-submit disabled">次へ</a>
+                class="btn btn-submit disabled">
+                @if(request()->query('from_confirm') === 'edit')
+                    確認画面へ
+                @else
+                    次へ
+                @endif
+            </a>
         </div>
     </div>
 

@@ -63,7 +63,12 @@
         来店当日は代表者の身分証明証が必要になります。
         ご準備いただき足元にお気をつけの上ご来店ください。
     </p>
+    <br>
     {{-- キャンセル用ルートは未定義のためプレースホルダーにしています --}}
+    <p>
+        ご予約の変更は<a href="{{ route('client.reservation.edit.auth', ['token' => $reservation->token]) }}">コチラ</a>よりお手続きください。
+    </p>
+    <br>
     <p>
         ご予約のキャンセルは<a
             href="{{ route('client.reservation.cancel.show', ['token' => $reservation->token]) }}">コチラ</a>よりお手続きください。

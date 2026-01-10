@@ -14,6 +14,12 @@ class DatabaseSeeder extends Seeder
         $this->call([
             InitialUserSeeder::class,
             InitialResortSeeder::class,
+            BusinessPatternSeeder::class,
+            RentalMenuCategorySeeder::class,
+            RentalMenuSeeder::class,
+            GearItemCategorySeeder::class,
+            GearItemSeeder::class,
+            RentalMenuComponentSeeder::class,
         ]);
     }
 }

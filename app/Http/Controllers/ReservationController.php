@@ -580,9 +580,20 @@ class ReservationController extends Controller
                 ->with('status', '予約情報が不足しています。再度入力してください。');
         }
 
+        
         DB::transaction(function () use ($header, $details) {
             $userId = Auth::id();
+            
+            $currentMax = Reservation::withTrashed()
+                ->where('visit_date', $header['reserve_date'])
+                ->lockForUpdate()
+                ->max('build_number');
+    
+            // 最大値があれば+1、なければ1番とする
+            $nextBuildNumber = $currentMax ? $currentMax + 1 : 1;
 
+            $token = (string)Str::uuid();
+            
             // 予約ヘッダ登録
             $reservation = Reservation::create([
                 'rep_last_name'        => $header['rep_last_name'],
@@ -599,7 +610,7 @@ class ReservationController extends Controller
                 'note'                 => $header['note'] ?? null,
                 'is_terms_agreed'      => $header['is_terms_agreed'] ?? false,
                 // token はモデル側のbootで自動採番
-                'build_number'         => null,
+                'build_number'         => $nextBuildNumber,
                 'printed_user_id'      => null,
                 'created_by'           => $userId,
                 'updated_by'           => $userId,

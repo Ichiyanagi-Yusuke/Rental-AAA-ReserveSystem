@@ -462,13 +462,15 @@ class ClientReservationController extends Controller
 
             // ▼▼▼ 追加：来店日ごとの連番(build_number)を算出 ▼▼▼
             // 排他制御(lockForUpdate)を行い、同時アクセスの重複を防ぎつつ最大値を取得
-            $currentMax = Reservation::where('visit_date', $header['reserve_date'])
+            $currentMax = Reservation::withTrashed()
+                ->where('visit_date', $header['reserve_date'])
                 ->lockForUpdate()
                 ->max('build_number');
 
             // 最大値があれば+1、なければ1番とする
             $nextBuildNumber = $currentMax ? $currentMax + 1 : 1;
             // ▲▲▲ 追加ここまで ▲▲▲
+
 
             $token = (string)Str::uuid();
 

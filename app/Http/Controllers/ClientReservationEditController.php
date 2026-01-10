@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationUpdated;
+use Carbon\Carbon;
 
 class ClientReservationEditController extends Controller
 {
@@ -20,6 +21,19 @@ class ClientReservationEditController extends Controller
      */
     public function showAuth($token)
     {
+
+        $reservation = Reservation::where('token', $token)
+        ->first();
+
+        // dd($reservation);
+
+        if (Carbon::parse($reservation->visit_date)->lt(Carbon::today())) {
+
+            // 過去の日付ならエラーページへ遷移
+            return view('client.reservations.error_past_date');
+
+        }
+
         return view('client.reservations.edit.auth', compact('token'));
     }
 

@@ -51,6 +51,8 @@ class ReservationController extends Controller
 
         $statusParam = $request->query('status');
 
+        
+
         $targetDate  = null;
         $filterLabel = null;
 
@@ -75,6 +77,13 @@ class ReservationController extends Controller
             $query->where('is_needs_confirmation', true);
             // フィルタラベルを設定（画面上のタイトル用）
             $filterLabel = '変更確認待ちの予約';
+        }
+        // ▼▼▼ 追加: キャンセル確認待ちの絞り込み ▼▼▼
+        elseif ($statusParam === 'cancelled_needs_confirmation') {
+            // 論理削除されたものだけを対象にする
+            $query->onlyTrashed()
+                ->where('is_cancel_needs_confirmation', true);
+            $filterLabel = 'キャンセル確認待ち（印刷済）';
         }
 
         if ($targetDate) {
@@ -823,5 +832,22 @@ class ReservationController extends Controller
 
         return back()->with('status', '変更を確認済みにしました。');
     }
+    // ■ 追加: キャンセル確認済み処理
+    // routes/web.php で定義するルートに対応させます
+    public function verifyCancel($id)
+    {
+        if (! $this->isMasterUser()) {
+            abort(403);
+        }
+
+        // 論理削除されているデータも含めて取得
+        $reservation = Reservation::withTrashed()->findOrFail($id);
+
+        $reservation->is_cancel_needs_confirmation = false;
+        $reservation->save();
+
+        return back()->with('status', 'キャンセルを確認済みにしました。');
+    }
+
 
 }

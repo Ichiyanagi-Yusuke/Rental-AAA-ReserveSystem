@@ -221,6 +221,54 @@
                     </div>
                 </a>
                 {{-- ▲ 追加ここまで --}}
+
+                {{-- ▼ 追加: キャンセル確認通知カード --}}
+                <a href="{{ route('reservations.index', ['status' => 'cancelled_needs_confirmation']) }}"
+                    class="flex flex-col justify-between bg-white rounded-xl shadow-sm border p-4 sm:p-5 transition
+       {{ isset($cancelledReservations) && $cancelledReservations->count() > 0 ? 'border-gray-400 ring-2 ring-gray-200 hover:shadow-md' : 'border-gray-100 hover:border-gray-200' }}">
+
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <h3
+                                class="text-sm font-semibold {{ isset($cancelledReservations) && $cancelledReservations->count() > 0 ? 'text-gray-800' : 'text-gray-900' }}">
+                                キャンセル済みの回収
+                            </h3>
+                            <p class="mt-1 text-xs text-gray-500">
+                                印刷済みですがキャンセルされました。<br>準備済みなら在庫を戻してください。
+                            </p>
+                        </div>
+                        <div
+                            class="flex h-9 w-9 items-center justify-center rounded-full {{ isset($cancelledReservations) && $cancelledReservations->count() > 0 ? 'bg-gray-200' : 'bg-gray-50' }}">
+                            <svg class="h-5 w-5 {{ isset($cancelledReservations) && $cancelledReservations->count() > 0 ? 'text-gray-700' : 'text-gray-400' }}"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between text-xs">
+                        @if (isset($cancelledReservations) && $cancelledReservations->count() > 0)
+                            <span
+                                class="inline-flex items-center rounded-full px-2.5 py-1 bg-gray-800 text-white font-bold">
+                                {{ $cancelledReservations->count() }} 件の回収待ち
+                            </span>
+                        @else
+                            <span class="inline-flex items-center rounded-full px-2.5 py-1 bg-gray-100 text-gray-500">
+                                なし
+                            </span>
+                        @endif
+
+                        <span class="inline-flex items-center text-gray-600 font-medium">
+                            確認する
+                            <svg class="ml-1 h-3 w-3" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </span>
+                    </div>
+                </a>
+                {{-- ▲ 追加ここまで --}}
                 {{-- 今後、他機能のカードをここに増やしていける --}}
             </div>
         </div>

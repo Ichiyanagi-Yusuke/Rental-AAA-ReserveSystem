@@ -18,6 +18,7 @@ use App\Http\Controllers\PublicNewsController;
 use App\Http\Controllers\DataAnalysisController;
 use App\Http\Controllers\ClientReservationEditController;
 use App\Http\Controllers\ClientReservationCancelController;
+use App\Http\Controllers\DashboardController; // ★ 追加
 use App\Models\Reservation;
 
 
@@ -88,21 +89,13 @@ Route::get('/', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/dashboard', function () {
-    // 確認が必要な予約を取得（更新日時が新しい順）
-    $modifiedReservations = Reservation::where('is_needs_confirmation', true)
-        ->orderBy('updated_at', 'desc')
-        ->get();
+// メインダッシュボード
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // ▼ 追加: キャンセル確認待ち（印刷済み かつ 論理削除済み かつ 確認フラグON）
-    $cancelledReservations = Reservation::onlyTrashed()
-        ->where('is_cancel_needs_confirmation', true)
-        ->orderBy('deleted_at', 'desc')
-        ->get();
-
-    return view('dashboard', compact('modifiedReservations', 'cancelledReservations'));
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+// ★ 新規追加ページ
+Route::get('/dashboard/reservations', [DashboardController::class, 'reservations'])->name('dashboard.reservations');
+Route::get('/dashboard/notifications', [DashboardController::class, 'notifications'])->name('dashboard.notifications');
+Route::get('/dashboard/functions', [DashboardController::class, 'functions'])->name('dashboard.functions');
 
 // 参照用（全ログインユーザーOK）
 Route::middleware(['auth'])->group(function () {
@@ -224,6 +217,13 @@ Route::middleware(['auth', 'master.role'])->group(function () {
     // ■ キャンセル確認アクション
     Route::post('/reservations/{id}/verify-cancel', [ReservationController::class, 'verifyCancel'])
         ->name('reservations.verify_cancel');
+
+    Route::post('/reservations/{reservation}/verify-comment', [ReservationController::class, 'verifyComment'])
+        ->name('reservations.verify_comment');
+
+    // ★ 追加: 利用者コメント確認済みアクション
+    Route::post('/reservations/details/{detail}/verify-comment', [ReservationController::class, 'verifyGuestComment'])
+        ->name('reservations.details.verify_comment');
 
 });
 

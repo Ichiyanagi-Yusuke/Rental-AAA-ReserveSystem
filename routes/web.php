@@ -18,6 +18,7 @@ use App\Http\Controllers\PublicNewsController;
 use App\Http\Controllers\DataAnalysisController;
 use App\Http\Controllers\ClientReservationEditController;
 use App\Http\Controllers\ClientReservationCancelController;
+use App\Http\Controllers\DashboardController; // ★ 追加
 use App\Models\Reservation;
 
 
@@ -88,36 +89,13 @@ Route::get('/', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/dashboard', function () {
-    // 確認が必要な予約を取得（更新日時が新しい順）
-    $modifiedReservations = Reservation::where('is_needs_confirmation', true)
-        ->orderBy('updated_at', 'desc')
-        ->get();
+// メインダッシュボード
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // ▼ 追加: キャンセル確認待ち（印刷済み かつ 論理削除済み かつ 確認フラグON）
-    $cancelledReservations = Reservation::onlyTrashed()
-        ->where('is_cancel_needs_confirmation', true)
-        ->orderBy('deleted_at', 'desc')
-        ->get();
-
-    $commentPendingReservations = Reservation::whereNotNull('note')
-        ->where('note', '!=', '') // 空文字でない
-        ->where('is_comment_checked', false)
-        ->orderBy('visit_date', 'asc') // 来店日が近い順などが良いでしょう
-        ->get();
-
-    // ★ 追加: 利用者コメント確認待ち (詳細に note があり、かつ未確認のものを含む予約を取得)
-    $guestCommentPendingReservations = Reservation::whereHas('details', function ($query) {
-        $query->whereNotNull('note')
-            ->where('note', '!=', '')
-            ->where('is_comment_checked', false);
-    })
-        ->orderBy('visit_date', 'asc')
-        ->get();
-
-    return view('dashboard', compact('modifiedReservations', 'cancelledReservations', 'commentPendingReservations', 'guestCommentPendingReservations'));
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+// ★ 新規追加ページ
+Route::get('/dashboard/reservations', [DashboardController::class, 'reservations'])->name('dashboard.reservations');
+Route::get('/dashboard/notifications', [DashboardController::class, 'notifications'])->name('dashboard.notifications');
+Route::get('/dashboard/functions', [DashboardController::class, 'functions'])->name('dashboard.functions');
 
 // 参照用（全ログインユーザーOK）
 Route::middleware(['auth'])->group(function () {

@@ -11,9 +11,19 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
+                    </x-nav-link>
+                    {{-- ★ 以下を追加 --}}
+                    <x-nav-link :href="route('dashboard.reservations')" :active="request()->routeIs('dashboard.reservations')">
+                        予約
+                    </x-nav-link>
+                    <x-nav-link :href="route('dashboard.notifications')" :active="request()->routeIs('dashboard.notifications')">
+                        通知
+                    </x-nav-link>
+                    <x-nav-link :href="route('dashboard.functions')" :active="request()->routeIs('dashboard.functions')">
+                        機能
                     </x-nav-link>
                 </div>
             </div>
@@ -74,6 +84,15 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('dashboard.reservations')" :active="request()->routeIs('dashboard.reservations')">
+                予約
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('dashboard.notifications')" :active="request()->routeIs('dashboard.notifications')">
+                通知
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('dashboard.functions')" :active="request()->routeIs('dashboard.functions')">
+                機能
             </x-responsive-nav-link>
         </div>
 

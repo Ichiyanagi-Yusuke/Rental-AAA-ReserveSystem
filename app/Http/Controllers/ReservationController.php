@@ -85,6 +85,22 @@ class ReservationController extends Controller
                 ->where('is_cancel_needs_confirmation', true);
             $filterLabel = 'キャンセル確認待ち（印刷済）';
         }
+        // ★ 追加: コメント確認待ち
+        elseif ($statusParam === 'comment_needs_confirmation') {
+            $query->whereNotNull('note')
+                ->where('note', '!=', '')
+                ->where('is_comment_checked', false);
+            $filterLabel = '要望コメント確認待ちの予約';
+        }
+        // ★ 追加: 利用者コメント確認待ちの絞り込み
+        elseif ($statusParam === 'guest_comment_needs_confirmation') {
+            $query->whereHas('details', function ($q) {
+                $q->whereNotNull('note')
+                    ->where('note', '!=', '')
+                    ->where('is_comment_checked', false);
+            });
+            $filterLabel = '利用者コメント確認待ちの予約';
+        }
 
         if ($targetDate) {
             $query->whereDate('visit_date', $targetDate->toDateString());
@@ -849,5 +865,33 @@ class ReservationController extends Controller
         return back()->with('status', 'キャンセルを確認済みにしました。');
     }
 
+    /**
+     * 要望コメントを確認済みにする
+     */
+    public function verifyComment(Reservation $reservation)
+    {
+        if (! $this->isMasterUser()) {
+            abort(403);
+        }
+
+        // フラグを更新
+        $reservation->update(['is_comment_checked' => true]);
+
+        return back()->with('status', '要望コメントを確認済みにしました。');
+    }
+
+    /**
+     * 利用者コメントを確認済みにする
+     */
+    public function verifyGuestComment(ReservationDetail $detail)
+    {
+        if (! $this->isMasterUser()) {
+            abort(403);
+        }
+
+        $detail->update(['is_comment_checked' => true]);
+
+        return back()->with('status', '利用者コメントを確認済みにしました。');
+    }
 
 }

@@ -35,6 +35,7 @@ class Reservation extends Model
         'version',
         'is_needs_confirmation', // 追加
         'is_cancel_needs_confirmation',
+        'is_comment_checked',
     ];
 
     protected $casts = [
@@ -45,6 +46,7 @@ class Reservation extends Model
         'is_terms_agreed'   => 'boolean',
         'printed_at'  => 'datetime',
         'is_cancel_needs_confirmation' => 'boolean',
+        'is_comment_checked' => 'boolean',
     ];
 
     /**

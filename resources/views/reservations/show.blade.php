@@ -70,6 +70,8 @@
             @endif
             {{-- ▲ 追加ここまで --}}
 
+
+
             {{-- ▼ 追加: 変更確認アラートとボタン --}}
             @if ($reservation->is_needs_confirmation)
                 <div
@@ -99,6 +101,41 @@
                                     d="M5 13l4 4L19 7" />
                             </svg>
                             変更を確認済みにする
+                        </button>
+                    </form>
+                </div>
+            @endif
+            {{-- ▲ 追加ここまで --}}
+
+            {{-- ▼ 追加: コメント確認アラートとボタン --}}
+            @if (!empty($reservation->note) && !$reservation->is_comment_checked)
+                <div
+                    class="bg-yellow-50 border-l-4 border-yellow-400 p-4 shadow-sm rounded-r-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-yellow-800">ご要望コメントが未確認です</h3>
+                            <div class="mt-1 text-sm text-yellow-700">
+                                <p>お客様からの要望（note）が入力されています。基本情報欄の「その他ご要望」を確認し、対応可能か等を確認した上で「確認済みにする」ボタンを押してください。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form action="{{ route('reservations.verify_comment', $reservation->id) }}" method="POST">
+                        @csrf
+                        <button type="submit"
+                            class="whitespace-nowrap inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                            <svg class="mr-2 -ml-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            確認済みにする
                         </button>
                     </form>
                 </div>
@@ -273,6 +310,24 @@
                                     <span
                                         class="hidden sm:inline bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs">{{ $detail->mainGearMenu->name }}</span>
                                 @endif
+
+                                {{-- ▼ 追加: コメントありバッジ --}}
+                                @if (!empty($detail->note))
+                                    @if (!$detail->is_comment_checked)
+                                        {{-- 未確認の場合: 赤色で目立たせる --}}
+                                        <span
+                                            class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-bold whitespace-nowrap">
+                                            コメントあり
+                                        </span>
+                                    @else
+                                        {{-- 確認済みの場合: グレーで控えめに --}}
+                                        <span
+                                            class="hidden sm:inline bg-gray-200 text-gray-600 px-2 py-0.5 rounded text-xs whitespace-nowrap">
+                                            コメントあり
+                                        </span>
+                                    @endif
+                                @endif
+                                {{-- ▲ 追加ここまで --}}
                                 <svg x-show="!open" class="w-4 h-4 text-gray-400" fill="none"
                                     stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -385,12 +440,43 @@
                             <div class="mt-2">
                                 <h4 class="text-xs font-semibold text-gray-500 mb-1 border-l-2 border-indigo-400 pl-2">
                                     ご要望</h4>
-                                <div
-                                    class="border border-dashed border-gray-300 rounded-md px-3 py-2 bg-gray-50/60 text-xs">
-                                    @if (!empty($detail->note))
-                                        {{ $detail->note }}
+                                {{-- ご要望セクション（修正） --}}
+                                <div class="mt-2">
+                                    <h4
+                                        class="text-xs font-semibold text-gray-500 mb-1 border-l-2 border-indigo-400 pl-2">
+                                        ご要望</h4>
+
+                                    {{-- 未確認コメントがある場合のアラートとボタン --}}
+                                    @if (!empty($detail->note) && !$detail->is_comment_checked)
+                                        <div
+                                            class="mb-2 p-2 bg-orange-50 border border-orange-200 rounded text-orange-800 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                            <span>
+                                                <strong>未確認のご要望があります:</strong><br>
+                                                {{ $detail->note }}
+                                            </span>
+                                            <form
+                                                action="{{ route('reservations.details.verify_comment', $detail->id) }}"
+                                                method="POST">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="whitespace-nowrap bg-orange-600 hover:bg-orange-700 text-white text-xs px-2 py-1 rounded shadow-sm">
+                                                    確認済みにする
+                                                </button>
+                                            </form>
+                                        </div>
                                     @else
-                                        <span class="text-gray-400">特になし</span>
+                                        {{-- 通常表示 --}}
+                                        <div
+                                            class="border border-dashed border-gray-300 rounded-md px-3 py-2 bg-gray-50/60 text-xs">
+                                            @if (!empty($detail->note))
+                                                {{ $detail->note }}
+                                                @if ($detail->is_comment_checked)
+                                                    <span class="ml-2 text-green-600 font-bold">（確認済み）</span>
+                                                @endif
+                                            @else
+                                                <span class="text-gray-400">特になし</span>
+                                            @endif
+                                        </div>
                                     @endif
                                 </div>
                             </div>

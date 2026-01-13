@@ -31,6 +31,7 @@ class ReservationDetail extends Model
         'group_sequence',
         'created_by',
         'updated_by',
+        'is_comment_checked', // ★ 追加
     ];
 
     protected $casts = [
@@ -39,6 +40,7 @@ class ReservationDetail extends Model
         'height'         => 'integer',
         'foot_size'      => 'float',
         'group_sequence' => 'integer',
+        'is_comment_checked' => 'boolean', // ★ 追加
         'is_step_on',
     ];
 

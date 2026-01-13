@@ -100,7 +100,22 @@ Route::get('/dashboard', function () {
         ->orderBy('deleted_at', 'desc')
         ->get();
 
-    return view('dashboard', compact('modifiedReservations', 'cancelledReservations'));
+    $commentPendingReservations = Reservation::whereNotNull('note')
+        ->where('note', '!=', '') // 空文字でない
+        ->where('is_comment_checked', false)
+        ->orderBy('visit_date', 'asc') // 来店日が近い順などが良いでしょう
+        ->get();
+
+    // ★ 追加: 利用者コメント確認待ち (詳細に note があり、かつ未確認のものを含む予約を取得)
+    $guestCommentPendingReservations = Reservation::whereHas('details', function ($query) {
+        $query->whereNotNull('note')
+            ->where('note', '!=', '')
+            ->where('is_comment_checked', false);
+    })
+        ->orderBy('visit_date', 'asc')
+        ->get();
+
+    return view('dashboard', compact('modifiedReservations', 'cancelledReservations', 'commentPendingReservations', 'guestCommentPendingReservations'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
@@ -224,6 +239,13 @@ Route::middleware(['auth', 'master.role'])->group(function () {
     // ■ キャンセル確認アクション
     Route::post('/reservations/{id}/verify-cancel', [ReservationController::class, 'verifyCancel'])
         ->name('reservations.verify_cancel');
+
+    Route::post('/reservations/{reservation}/verify-comment', [ReservationController::class, 'verifyComment'])
+        ->name('reservations.verify_comment');
+
+    // ★ 追加: 利用者コメント確認済みアクション
+    Route::post('/reservations/details/{detail}/verify-comment', [ReservationController::class, 'verifyGuestComment'])
+        ->name('reservations.details.verify_comment');
 
 });
 

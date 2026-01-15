@@ -120,6 +120,193 @@ class ReservationController extends Controller
         ]);
     }
 
+    // 検索フォーム表示
+    public function search()
+    {
+        if (! $this->isMasterUser()) {
+            abort(403);
+        }
+
+        return view('reservations.search');
+    }
+
+    // 検索実行
+    public function searchResults(Request $request)
+    {
+        if (! $this->isMasterUser()) {
+            abort(403);
+        }
+
+        $query = Reservation::with('resort')->withCount('details');
+
+        // 電話番号での検索
+        if ($request->filled('phone')) {
+            $query->where('phone', 'like', '%' . $request->phone . '%');
+        }
+
+        // メールアドレスでの検索
+        if ($request->filled('email')) {
+            $query->where('email', 'like', '%' . $request->email . '%');
+        }
+
+        // 代表者姓での検索
+        if ($request->filled('rep_last_name')) {
+            $query->where('rep_last_name', 'like', '%' . $request->rep_last_name . '%');
+        }
+
+        // 代表者名での検索
+        if ($request->filled('rep_first_name')) {
+            $query->where('rep_first_name', 'like', '%' . $request->rep_first_name . '%');
+        }
+
+        // 代表者姓（フリガナ）での検索
+        if ($request->filled('rep_last_name_kana')) {
+            $query->where('rep_last_name_kana', 'like', '%' . $request->rep_last_name_kana . '%');
+        }
+
+        // 代表者名（フリガナ）での検索
+        if ($request->filled('rep_first_name_kana')) {
+            $query->where('rep_first_name_kana', 'like', '%' . $request->rep_first_name_kana . '%');
+        }
+
+        // 来店日での検索
+        if ($request->filled('visit_date')) {
+            $query->whereDate('visit_date', $request->visit_date);
+        }
+
+        $reservations = $query
+            ->orderBy('visit_date', 'desc')
+            ->orderBy('visit_time', 'desc')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('reservations.search', [
+            'reservations' => $reservations,
+            'searchParams' => $request->all(),
+        ]);
+    }
+
+    // ヘッダーからの全文検索
+    public function quickSearch(Request $request)
+    {
+        if (! $this->isMasterUser()) {
+            abort(403);
+        }
+
+        $keyword = $request->input('q');
+
+        if (empty($keyword)) {
+            return redirect()->route('reservations.index');
+        }
+
+        $query = Reservation::with('resort')->withCount('details');
+
+        // 複数のフィールドで検索（OR条件）
+        $query->where(function ($q) use ($keyword) {
+            $q->where('phone', 'like', '%' . $keyword . '%')
+              ->orWhere('email', 'like', '%' . $keyword . '%')
+              ->orWhere('rep_last_name', 'like', '%' . $keyword . '%')
+              ->orWhere('rep_first_name', 'like', '%' . $keyword . '%')
+              ->orWhere('rep_last_name_kana', 'like', '%' . $keyword . '%')
+              ->orWhere('rep_first_name_kana', 'like', '%' . $keyword . '%');
+        });
+
+        $reservations = $query
+            ->orderBy('visit_date', 'desc')
+            ->orderBy('visit_time', 'desc')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('reservations.index', [
+            'reservations' => $reservations,
+            'filter'       => null,
+            'filterLabel'  => '検索結果: "' . $keyword . '"',
+            'targetDate'   => null,
+        ]);
+    }
+
+    // 予約カレンダー表示
+    public function calendar(Request $request)
+    {
+        if (! $this->isMasterUser()) {
+            abort(403);
+        }
+
+        // 年月をパラメータから取得（デフォルトは今月）
+        $year = $request->input('year', Carbon::now()->year);
+        $month = $request->input('month', Carbon::now()->month);
+
+        // カレンダーの基準日を作成
+        $baseDate = Carbon::create($year, $month, 1);
+
+        // 当月の開始日と終了日
+        $startOfMonth = $baseDate->copy()->startOfMonth();
+        $endOfMonth = $baseDate->copy()->endOfMonth();
+
+        // 当月の予約データを取得し、日付ごとに集計
+        $reservations = Reservation::whereBetween('visit_date', [$startOfMonth, $endOfMonth])
+            ->withCount('details')
+            ->get()
+            ->groupBy(function ($reservation) {
+                return $reservation->visit_date->format('Y-m-d');
+            })
+            ->map(function ($group) {
+                return (object) [
+                    'reservation_count' => $group->count(),
+                    'guest_count' => $group->sum('details_count'),
+                ];
+            });
+
+        // カレンダーの週を生成
+        $calendar = [];
+        $currentDate = $startOfMonth->copy()->startOfWeek(Carbon::SUNDAY);
+
+        while ($currentDate <= $endOfMonth->copy()->endOfWeek(Carbon::SATURDAY)) {
+            $week = [];
+            for ($i = 0; $i < 7; $i++) {
+                $dateStr = $currentDate->format('Y-m-d');
+                $isCurrentMonth = $currentDate->month == $month;
+
+                $dayData = [
+                    'date' => $currentDate->copy(),
+                    'dateStr' => $dateStr,
+                    'isCurrentMonth' => $isCurrentMonth,
+                    'isToday' => $currentDate->isToday(),
+                    'reservation_count' => 0,
+                    'guest_count' => 0,
+                ];
+
+                if ($isCurrentMonth && isset($reservations[$dateStr])) {
+                    $dayData['reservation_count'] = $reservations[$dateStr]->reservation_count;
+                    $dayData['guest_count'] = $reservations[$dateStr]->guest_count ?? 0;
+                }
+
+                $week[] = $dayData;
+                $currentDate->addDay();
+            }
+            $calendar[] = $week;
+        }
+
+        // 前月・次月のリンク用
+        $prevMonth = $baseDate->copy()->subMonth();
+        $nextMonth = $baseDate->copy()->addMonth();
+
+        // 年月選択用のオプション
+        $yearOptions = range(Carbon::now()->year - 2, Carbon::now()->year + 2);
+        $monthOptions = range(1, 12);
+
+        return view('reservations.calendar', [
+            'calendar' => $calendar,
+            'currentYear' => $year,
+            'currentMonth' => $month,
+            'baseDate' => $baseDate,
+            'prevMonth' => $prevMonth,
+            'nextMonth' => $nextMonth,
+            'yearOptions' => $yearOptions,
+            'monthOptions' => $monthOptions,
+        ]);
+    }
+
 
     public function startCreate()
     {

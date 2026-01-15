@@ -111,6 +111,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reservations', [ReservationController::class, 'index'])
         ->name('reservations.index');
 
+    // 予約検索
+    Route::get('/reservations-search', [ReservationController::class, 'search'])
+        ->name('reservations.search');
+    Route::post('/reservations-search', [ReservationController::class, 'searchResults'])
+        ->name('reservations.search.results');
+
+    // ヘッダーからの全文検索
+    Route::get('/reservations-quick-search', [ReservationController::class, 'quickSearch'])
+        ->name('reservations.quick-search');
+
+    // 予約カレンダー
+    Route::get('/reservations-calendar', [ReservationController::class, 'calendar'])
+        ->name('reservations.calendar');
+
     Route::get('/reservations/create', [ReservationController::class, 'startCreate'])
         ->name('reservations.create');
 

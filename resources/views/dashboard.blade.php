@@ -39,6 +39,69 @@
                     </div>
                 </div>
 
+                {{-- 予約検索カード --}}
+                <a href="{{ route('reservations.search') }}"
+                    class="flex flex-col justify-between bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 hover:shadow-md hover:border-purple-200 transition">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-900">
+                                予約検索
+                            </h3>
+                            <p class="mt-1 text-xs text-gray-500">
+                                電話番号、メールアドレス、代表者名、来店日などで予約を検索します。
+                            </p>
+                        </div>
+                        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-purple-50">
+                            <svg class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs">
+                        <span class="inline-flex items-center rounded-full px-2.5 py-1 bg-gray-100 text-gray-600">
+                            検索フォーム
+                        </span>
+                        <span class="inline-flex items-center text-purple-600 font-medium">
+                            開く
+                            <svg class="ml-1 h-3 w-3" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </span>
+                    </div>
+                </a>
+
+                {{-- 予約カレンダーカード --}}
+                <a href="{{ route('reservations.calendar') }}"
+                    class="flex flex-col justify-between bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 hover:shadow-md hover:border-teal-200 transition">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-900">
+                                予約カレンダー
+                            </h3>
+                            <p class="mt-1 text-xs text-gray-500">
+                                カレンダー形式で予約状況を確認できます。日別の予約件数と利用者数を表示します。
+                            </p>
+                        </div>
+                        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-teal-50">
+                            <svg class="h-5 w-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs">
+                        <span class="inline-flex items-center rounded-full px-2.5 py-1 bg-gray-100 text-gray-600">
+                            カレンダー表示
+                        </span>
+                        <span class="inline-flex items-center text-teal-600 font-medium">
+                            開く
+                            <svg class="ml-1 h-3 w-3" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </span>
+                    </div>
+                </a>
 
                 <a href="{{ route('reservations.index', ['filter' => 'today']) }}"
                     class="block bg-white shadow-sm rounded-lg p-5 hover:bg-gray-50 transition">

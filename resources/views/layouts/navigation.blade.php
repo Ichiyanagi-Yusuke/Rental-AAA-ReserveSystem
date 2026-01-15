@@ -28,6 +28,24 @@
                 </div>
             </div>
 
+            <!-- Search Form -->
+            <div class="hidden sm:flex sm:items-center sm:flex-1 sm:justify-center sm:px-4">
+                <form method="GET" action="{{ route('reservations.quick-search') }}" class="w-full max-w-md">
+                    <div class="relative">
+                        <input type="text"
+                               name="q"
+                               value="{{ request('q') }}"
+                               placeholder="予約を検索（電話番号、名前、メールなど）"
+                               class="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
@@ -81,6 +99,24 @@
 
     <!-- Responsive Navigation Menu -->
     <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
+        <!-- Mobile Search Form -->
+        <div class="pt-2 pb-3 px-4">
+            <form method="GET" action="{{ route('reservations.quick-search') }}">
+                <div class="relative">
+                    <input type="text"
+                           name="q"
+                           value="{{ request('q') }}"
+                           placeholder="予約を検索"
+                           class="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </form>
+        </div>
+
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}

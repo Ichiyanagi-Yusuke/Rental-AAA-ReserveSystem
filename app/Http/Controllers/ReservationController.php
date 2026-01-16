@@ -8,6 +8,7 @@ use App\Models\Resort;
 use App\Models\RentalMenu;
 use App\Models\RentalMenuCategory; // ★ 追加
 use App\Models\BusinessCalendar;
+use App\Models\ReservationSummary;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -41,8 +42,10 @@ class ReservationController extends Controller
             abort(403);
         }
 
-        $query = Reservation::with('resort')
-            ->withCount('details');
+        // $query = Reservation::with('resort')
+        //     ->withCount('details');
+
+        $query = ReservationSummary::query();
 
         // ?filter=today / ?filter=tomorrow を解釈
         $filter      = $request->query('filter');
@@ -93,12 +96,19 @@ class ReservationController extends Controller
             $filterLabel = '要望コメント確認待ちの予約';
         }
         // ★ 追加: 利用者コメント確認待ちの絞り込み
+        // elseif ($statusParam === 'guest_comment_needs_confirmation') {
+        //     $query->whereHas('details', function ($q) {
+        //         $q->whereNotNull('note')
+        //             ->where('note', '!=', '')
+        //             ->where('is_comment_checked', false);
+        //     });
+        //     $filterLabel = '利用者コメント確認待ちの予約';
+        // }
+        // ★ 追加: 利用者コメント確認待ちの絞り込み
         elseif ($statusParam === 'guest_comment_needs_confirmation') {
-            $query->whereHas('details', function ($q) {
-                $q->whereNotNull('note')
-                    ->where('note', '!=', '')
-                    ->where('is_comment_checked', false);
-            });
+            // whereHas('details'...) は使えないため、ビューに追加したフラグを使用
+            $query->where('has_guest_comment_issue', true);
+
             $filterLabel = '利用者コメント確認待ちの予約';
         }
 
@@ -137,7 +147,8 @@ class ReservationController extends Controller
             abort(403);
         }
 
-        $query = Reservation::with('resort')->withCount('details');
+        $query = ReservationSummary::query();
+        // $query = Reservation::with('resort')->withCount('details');
 
         // 電話番号での検索
         if ($request->filled('phone')) {

@@ -19,6 +19,7 @@ use App\Http\Controllers\DataAnalysisController;
 use App\Http\Controllers\ClientReservationEditController;
 use App\Http\Controllers\ClientReservationCancelController;
 use App\Http\Controllers\DashboardController; // ★ 追加
+use App\Http\Controllers\ERentalReservationController; // 追加
 use App\Models\Reservation;
 
 
@@ -189,6 +190,9 @@ Route::middleware(['auth'])->group(function () {
             ->name('season_summary');
 
     });
+
+    Route::get('/e_rental_reservations/{id}', [ERentalReservationController::class, 'show'])->name('e_rental_reservations.show');
+    Route::patch('/e_rental_reservations/{id}/check_comment', [ERentalReservationController::class, 'updateCommentStatus'])->name('e_rental_reservations.check_comment');
 
 });
 

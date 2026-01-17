@@ -134,6 +134,21 @@
                 </div>
             </div>
 
+            {{-- ▼▼▼ 追加: システム管理項目セクション ▼▼▼ --}}
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    <h3 class="text-lg font-bold mb-4 border-b pb-2">システム管理項目</h3>
+                    <div>
+                        <label class="text-xs text-gray-500">管理番号 (Build No)</label>
+                        {{-- 目立つように少し大きく表示 --}}
+                        <div class="font-bold text-2xl text-indigo-700">
+                            {{ $reservation->build_number ?? '未採番' }}
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">※この番号は、同日のWEB予約と重複しないユニークな番号です（帳票印刷などに使用）</p>
+                    </div>
+                </div>
+            </div>
+
             {{-- 2. 利用者明細 (レンタルアイテム) --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">

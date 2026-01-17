@@ -80,88 +80,95 @@ class ERentalParser
     private function parseDetails(string $body): array
     {
         $details = [];
-        $s = '[\s　]*';
+        $s = '[\s　]*'; // 空白文字（全角・半角・改行マッチ用ではない）
 
         // 区切り線でブロック分割
         $blocks = preg_split('/-{10,}/', $body);
 
         foreach ($blocks as $block) {
+            // 【N人目】が含まれないブロックは無視
             if (!preg_match('/【\d+人目】/', $block)) {
                 continue;
             }
 
             $item = [];
 
-            // -----------------------------------------------------
-            // 各属性の抽出（ブロック全体から正規表現で探す）
-            // -----------------------------------------------------
-            if (preg_match('/お名前：' . $s . '(.+?)[\s　\r\n]/u', $block, $m)) {
-                // 名前はお名前：の直後から、空白か改行が来るまでを取得
-                $item['guest_name'] = trim($m[1]);
+            // =========================================================
+            // 1. 小計 (Subtotal) を先にブロック全体から抜き出す
+            // =========================================================
+            // "s"修飾子をつけることで、途中に改行があってもマッチするようにします
+            if (preg_match('/小計.*?￥([\d,]+)/us', $block, $m)) {
+                $item['subtotal_price'] = (int)str_replace(',', '', $m[1]);
+
+                // 抜き出した小計部分をブロックから削除する
+                // (置換して消すことで、後続のアイテム判定処理に混ざらないようにする)
+                $block = str_replace($m[0], '', $block);
             }
 
+            // =========================================================
+            // 2. 各属性の抽出
+            // =========================================================
+            if (preg_match('/お名前：' . $s . '(.+?)[\s　\r\n]/u', $block, $m)) {
+                $item['guest_name'] = trim($m[1]);
+            }
             if (preg_match('/性別：' . $s . '(.+?)' . $s . '(?:年齢|体重|$)/u', $block, $m)) {
                 $item['gender'] = trim($m[1]);
             }
-
             if (preg_match('/年齢：' . $s . '(\d+)歳/u', $block, $m)) {
                 $item['age'] = (int)$m[1];
             }
-
             if (preg_match('/体重：' . $s . '(\d+)kg/u', $block, $m)) {
                 $item['weight'] = (int)$m[1];
             }
-
             if (preg_match('/身長：' . $s . '(\d+)cm/u', $block, $m)) {
                 $item['height'] = (int)$m[1];
             }
-
             if (preg_match('/足のサイズ：' . $s . '([\d\.]+)cm/u', $block, $m)) {
                 $item['foot_size'] = (float)$m[1];
             }
-
             if (preg_match('/スタンス：' . $s . '(.+?)[\r\n]/u', $block, $m)) {
                 $item['stance'] = trim($m[1]);
             }
 
-            // -----------------------------------------------------
-            // 行ごとの解析（アイテムテキストと小計の分離）
-            // -----------------------------------------------------
-            $lines = preg_split('/\r\n|\r|\n/', trim($block));
+            // =========================================================
+            // 3. アイテム行の解析
+            // =========================================================
+
+            // 全角スペースを改行に変換して、アイテムを分離しやすくする
+            $block = str_replace('　', "\n", $block);
+
+            // 改行で分割して配列化
+            $lines = preg_split('/\r\n|\r|\n/', $block);
             $itemLines = [];
 
             foreach ($lines as $line) {
-                // 行の前後の空白（全角含む）を除去
+                // 前後の空白除去
                 $line = preg_replace('/^[\s　]+|[\s　]+$/u', '', $line);
 
-                if ($line === '') continue;
-                if (str_contains($line, '【')) continue; // ヘッダー行スキップ
-
-                // ★小計の抽出処理 (ここを変更)
-                // 行の中に「小計 … ￥xxxx」があれば金額を抜き出し、その部分だけを行から削除する
-                if (preg_match('/小計' . $s . '…' . $s . '￥([\d,]+)/u', $line, $m)) {
-                    $item['subtotal_price'] = (int)str_replace(',', '', $m[1]);
-
-                    // 小計部分を空文字に置換して消す
-                    $line = preg_replace('/小計' . $s . '…' . $s . '￥[\d,]+/u', '', $line);
-                    // 再度トリム
-                    $line = preg_replace('/^[\s　]+|[\s　]+$/u', '', $line);
+                // 空行やヘッダー行はスキップ
+                if ($line === '' || str_contains($line, '【')) {
+                    continue;
                 }
 
-                // 残った行が属性行であればスキップ
-                // 「お名前：」や「性別：」などが残っている行はアイテムではない
+                // 属性行（お名前、性別など）を強力に除外
                 if (
                     preg_match('/^(お名前：|氏名：)/u', $line) ||
                     preg_match('/(性別：|年齢：|身長：|体重：|足のサイズ：|スタンス：)/u', $line) ||
-                    preg_match('/様' . $s . '性別：/u', $line) // 「様 性別：」のようなパターンも除外
+                    // 「様」だけの行、または「様」で始まる行を除外
+                    $line === '様' ||
+                    preg_match('/^様[\s　]*$/u', $line)
                 ) {
                     continue;
                 }
 
-                // 空になっていなければ、それはアイテム情報とみなす
-                if ($line !== '') {
-                    $itemLines[] = $line;
+                // 小計はすでにステップ1で除去済みなので、ここには残っていないはずだが、
+                // 万が一「小計」という文字単体だけ残っていた場合のためにチェック
+                if (str_contains($line, '小計')) {
+                    continue;
                 }
+
+                // ここまで残ったものはアイテムとみなす
+                $itemLines[] = $line;
             }
 
             $item['items_text'] = implode("\n", $itemLines);
@@ -173,7 +180,7 @@ class ERentalParser
 
         return $details;
     }
-
+    
     private function parseDateString(string $dateStr): ?Carbon
     {
         try {

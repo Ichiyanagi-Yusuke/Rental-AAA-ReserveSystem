@@ -198,6 +198,45 @@ class ReservationController extends Controller
     }
 
     // ヘッダーからの全文検索
+    // public function quickSearch(Request $request)
+    // {
+    //     if (! $this->isMasterUser()) {
+    //         abort(403);
+    //     }
+
+    //     $keyword = $request->input('q');
+
+    //     if (empty($keyword)) {
+    //         return redirect()->route('reservations.index');
+    //     }
+
+    //     // $query = Reservation::with('resort')->withCount('details');
+    //     $query = ReservationSummary::query();
+
+    //     // 複数のフィールドで検索（OR条件）
+    //     $query->where(function ($q) use ($keyword) {
+    //         $q->where('phone', 'like', '%' . $keyword . '%')
+    //           ->orWhere('email', 'like', '%' . $keyword . '%')
+    //           ->orWhere('rep_last_name', 'like', '%' . $keyword . '%')
+    //           ->orWhere('rep_first_name', 'like', '%' . $keyword . '%')
+    //           ->orWhere('rep_last_name_kana', 'like', '%' . $keyword . '%')
+    //           ->orWhere('rep_first_name_kana', 'like', '%' . $keyword . '%');
+    //     });
+
+    //     $reservations = $query
+    //         ->orderBy('visit_date', 'desc')
+    //         ->orderBy('visit_time', 'desc')
+    //         ->paginate(20)
+    //         ->withQueryString();
+
+    //     return view('reservations.index', [
+    //         'reservations' => $reservations,
+    //         'filter'       => null,
+    //         'filterLabel'  => '検索結果: "' . $keyword . '"',
+    //         'targetDate'   => null,
+    //     ]);
+    // }
+
     public function quickSearch(Request $request)
     {
         if (! $this->isMasterUser()) {
@@ -210,16 +249,22 @@ class ReservationController extends Controller
             return redirect()->route('reservations.index');
         }
 
-        $query = Reservation::with('resort')->withCount('details');
+        $query = ReservationSummary::query();
+
+        // 検索キーワードに含まれる全角スペースを半角に変換（ヒット率向上のため）
+        $keyword = str_replace('　', ' ', $keyword);
 
         // 複数のフィールドで検索（OR条件）
         $query->where(function ($q) use ($keyword) {
             $q->where('phone', 'like', '%' . $keyword . '%')
-              ->orWhere('email', 'like', '%' . $keyword . '%')
-              ->orWhere('rep_last_name', 'like', '%' . $keyword . '%')
-              ->orWhere('rep_first_name', 'like', '%' . $keyword . '%')
-              ->orWhere('rep_last_name_kana', 'like', '%' . $keyword . '%')
-              ->orWhere('rep_first_name_kana', 'like', '%' . $keyword . '%');
+                ->orWhere('email', 'like', '%' . $keyword . '%')
+                // ▼▼▼ 修正箇所: rep_last_name等は存在しないため、rep_name等に変更 ▼▼▼
+                ->orWhere('rep_name', 'like', '%' . $keyword . '%')
+                ->orWhere('rep_kana', 'like', '%' . $keyword . '%')
+                // ▲▲▲ 修正ここまで ▲▲▲
+
+                // ★推奨: 予約番号でも検索できるように追加
+                ->orWhere('reservation_number', 'like', '%' . $keyword . '%');
         });
 
         $reservations = $query

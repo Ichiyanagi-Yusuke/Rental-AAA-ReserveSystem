@@ -198,45 +198,6 @@ class ReservationController extends Controller
     }
 
     // ヘッダーからの全文検索
-    // public function quickSearch(Request $request)
-    // {
-    //     if (! $this->isMasterUser()) {
-    //         abort(403);
-    //     }
-
-    //     $keyword = $request->input('q');
-
-    //     if (empty($keyword)) {
-    //         return redirect()->route('reservations.index');
-    //     }
-
-    //     // $query = Reservation::with('resort')->withCount('details');
-    //     $query = ReservationSummary::query();
-
-    //     // 複数のフィールドで検索（OR条件）
-    //     $query->where(function ($q) use ($keyword) {
-    //         $q->where('phone', 'like', '%' . $keyword . '%')
-    //           ->orWhere('email', 'like', '%' . $keyword . '%')
-    //           ->orWhere('rep_last_name', 'like', '%' . $keyword . '%')
-    //           ->orWhere('rep_first_name', 'like', '%' . $keyword . '%')
-    //           ->orWhere('rep_last_name_kana', 'like', '%' . $keyword . '%')
-    //           ->orWhere('rep_first_name_kana', 'like', '%' . $keyword . '%');
-    //     });
-
-    //     $reservations = $query
-    //         ->orderBy('visit_date', 'desc')
-    //         ->orderBy('visit_time', 'desc')
-    //         ->paginate(20)
-    //         ->withQueryString();
-
-    //     return view('reservations.index', [
-    //         'reservations' => $reservations,
-    //         'filter'       => null,
-    //         'filterLabel'  => '検索結果: "' . $keyword . '"',
-    //         'targetDate'   => null,
-    //     ]);
-    // }
-
     public function quickSearch(Request $request)
     {
         if (! $this->isMasterUser()) {

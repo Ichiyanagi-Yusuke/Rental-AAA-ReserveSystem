@@ -193,6 +193,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/e_rental_reservations/{id}', [ERentalReservationController::class, 'show'])->name('e_rental_reservations.show');
     Route::patch('/e_rental_reservations/{id}/check_comment', [ERentalReservationController::class, 'updateCommentStatus'])->name('e_rental_reservations.check_comment');
+    Route::get('/e_rental_reservations/{id}/pdf', [ERentalReservationController::class, 'downloadPdf'])->name('e_rental_reservations.pdf');
 
 });
 

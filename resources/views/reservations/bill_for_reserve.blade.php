@@ -8,30 +8,40 @@
     $itemCounts = [];
     $helmetCount = 0;
 
-    foreach ($reservation->details as $detail) {
-        // メインギア
-        if ($detail->mainGearMenu && $detail->mainGearMenu->name !== '利用しない') {
-            $name = $detail->mainGearMenu->name;
-            $itemCounts[$name] = ($itemCounts[$name] ?? 0) + 1;
-        }
-        // ウェア
-        if ($detail->wearMenu && $detail->wearMenu->name !== '利用しない') {
-            $name = $detail->wearMenu->name;
-            $itemCounts[$name] = ($itemCounts[$name] ?? 0) + 1;
-        }
-        // グローブ
-        if ($detail->gloveMenu && $detail->gloveMenu->name !== '利用しない') {
-            $name = $detail->gloveMenu->name;
-            $itemCounts[$name] = ($itemCounts[$name] ?? 0) + 1;
-        }
-        // ゴーグル
-        if ($detail->goggleMenu && $detail->goggleMenu->name !== '利用しない') {
-            $name = $detail->goggleMenu->name;
-            $itemCounts[$name] = ($itemCounts[$name] ?? 0) + 1;
-        }
-        // ヘルメット
-        if ($detail->is_helmet_used) {
-            $helmetCount++;
+    // Eレンタル予約かどうかを判定（最初のdetailにitems_textがあるか）
+    $isERental = $reservation->details->isNotEmpty() && isset($reservation->details->first()->items_text);
+
+    if ($isERental) {
+        // Eレンタル予約の場合は、items_textから簡易集計
+        // 実際の集計は複雑なので、「Eレンタル予約」として1件カウント
+        $itemCounts['Eレンタル予約'] = $reservation->details->count();
+    } else {
+        // 通常予約の場合
+        foreach ($reservation->details as $detail) {
+            // メインギア
+            if ($detail->mainGearMenu && $detail->mainGearMenu->name !== '利用しない') {
+                $name = $detail->mainGearMenu->name;
+                $itemCounts[$name] = ($itemCounts[$name] ?? 0) + 1;
+            }
+            // ウェア
+            if ($detail->wearMenu && $detail->wearMenu->name !== '利用しない') {
+                $name = $detail->wearMenu->name;
+                $itemCounts[$name] = ($itemCounts[$name] ?? 0) + 1;
+            }
+            // グローブ
+            if ($detail->gloveMenu && $detail->gloveMenu->name !== '利用しない') {
+                $name = $detail->gloveMenu->name;
+                $itemCounts[$name] = ($itemCounts[$name] ?? 0) + 1;
+            }
+            // ゴーグル
+            if ($detail->goggleMenu && $detail->goggleMenu->name !== '利用しない') {
+                $name = $detail->goggleMenu->name;
+                $itemCounts[$name] = ($itemCounts[$name] ?? 0) + 1;
+            }
+            // ヘルメット
+            if ($detail->is_helmet_used) {
+                $helmetCount++;
+            }
         }
     }
 
@@ -180,7 +190,7 @@
         }
 
         .gear {
-            width: 40mm;
+            width: 50mm;
 
         }
 
@@ -198,6 +208,10 @@
 
         .helmet {
             width: 10mm;
+        }
+
+        .price {
+            width: 15mm;
         }
 
         .agree {
@@ -241,7 +255,7 @@
         }
 
         .other {
-            width: 43mm;
+            width: 35mm;
             font-size: 2.5mm;
             text-align: left;
         }
@@ -274,8 +288,18 @@
     </style>
 </head>
 
+{{-- {{ dd($reservation) }} --}}
+
 <body>
-    <span class="size-8mm">{{ $reservation->rep_last_name }} 様 Rental AAA 予約貸出伝票</span>
+    <span class="size-8mm">{{ Str::limit($reservation->rep_last_name, 5, '...') }} 様
+        @if ($isERental == true)
+            eレンタル
+        @else
+            Rental AAA
+        @endif
+
+        予約貸出伝票
+    </span>
     <span class="size-8mm pd-l-5mm">({{ $reservation->build_number }})</span>
     <div class="sub-content">
         <div>
@@ -314,12 +338,21 @@
                             <td>追加数</td>
                         </tr>
                         @foreach ($itemCounts as $itemName => $count)
-                            <tr class="">
-                                <td class="item-name">{{ $itemName }}</td>
-                                <td class="reserve-num">{{ $count }}</td>
-                                <td class="add-num"></td>
+                            @if ($isERental == false)
+                                <tr class="">
+                                    <td class="item-name">{{ $itemName }}</td>
+                                    <td class="reserve-num">{{ $count }}</td>
+                                    <td class="add-num"></td>
 
-                            </tr>
+                                </tr>
+                            @else
+                                <tr class="">
+                                    <td class="item-name"></td>
+                                    <td class="reserve-num"></td>
+                                    <td class="add-num"></td>
+
+                                </tr>
+                            @endif
                         @endforeach
                         @if ($helmetCount !== 0)
                             <tr class="">
@@ -396,6 +429,9 @@
     </div>
 
     <div class="height10mm"><span class="detail-list">利用者リスト・レンタル詳細</span>
+        @if ($isERental == true)
+            （合計金額...￥{{ $reservation->total_price }}）
+        @endif
     </div>
 
     <div class="sss">
@@ -407,8 +443,12 @@
                 <td class="height5mm tall">身長</td>
                 <td class="height5mm foot">足</td>
                 <td class="height5mm stance">S</td>
-                <td class="height5mm gear">ギア</td>
-                <td class="height5mm other">その他</td>
+                @if ($isERental)
+                    <td class="height5mm gear" colspan="2">レンタルアイテム</td>
+                @else
+                    <td class="height5mm gear">ギア</td>
+                    <td class="height5mm other">その他</td>
+                @endif
                 <td class="height5mm price">金額</td>
                 <td class="height5mm agree">同意</td>
 
@@ -428,34 +468,48 @@
                             -
                         @endif
                     </td>
-                    <td class="gear l-side">
-                        @if (!is_null($detail->mainGearMenu))
-                            @if ($detail->mainGearMenu->name !== '利用しない')
-                                {{ $detail->mainGearMenu->name }}<br>Model No :
+                    @if ($isERental)
+                        {{-- Eレンタル予約の場合: ギアとその他を結合してitems_textを表示 --}}
+                        <td class="gear l-side" colspan="2">
+                            @if (isset($detail->items_text))
+                                {!! nl2br(e($detail->items_text)) !!}
                             @endif
-                        @endif
-                    </td>
-                    <td class="other">
-                        @if (!is_null($detail->wearMenu))
-                            @if ($detail->wearMenu->name !== '利用しない')
-                                W：{{ $detail->wearMenu->name }}({{ $detail->wear_size }})<br>
+                        </td>
+                    @else
+                        {{-- 通常予約の場合: ギアとその他を分けて表示 --}}
+                        <td class="gear l-side">
+                            @if (!is_null($detail->mainGearMenu))
+                                @if ($detail->mainGearMenu->name !== '利用しない')
+                                    {{ $detail->mainGearMenu->name }}<br>Model No :
+                                @endif
                             @endif
-                        @endif
-                        @if (!is_null($detail->gloveMenu))
-                            @if ($detail->gloveMenu->name !== '利用しない')
-                                GL：{{ $detail->gloveMenu->name }}({{ $detail->glove_size }})<br>
+                        </td>
+                        <td class="other">
+                            @if (!is_null($detail->wearMenu))
+                                @if ($detail->wearMenu->name !== '利用しない')
+                                    W：{{ $detail->wearMenu->name }}({{ $detail->wear_size }})<br>
+                                @endif
                             @endif
-                        @endif
-                        @if (!is_null($detail->goggleMenu))
-                            @if ($detail->goggleMenu->name !== '利用しない')
-                                GG：{{ $detail->goggleMenu->name }}<br>
+                            @if (!is_null($detail->gloveMenu))
+                                @if ($detail->gloveMenu->name !== '利用しない')
+                                    GL：{{ $detail->gloveMenu->name }}({{ $detail->glove_size }})<br>
+                                @endif
                             @endif
-                        @endif
-                        @if ($detail->is_helmet_used)
-                            ヘルメット
-                        @endif
-                    </td>
+                            @if (!is_null($detail->goggleMenu))
+                                @if ($detail->goggleMenu->name !== '利用しない')
+                                    GG：{{ $detail->goggleMenu->name }}<br>
+                                @endif
+                            @endif
+                            @if ($detail->is_helmet_used)
+                                ヘルメット
+                            @endif
+                        </td>
+                    @endif
+
                     <td class="price">
+                        @if ($isERental == true)
+                            ￥{{ $detail->subtotal_price }}
+                        @endif
                     </td>
                     <td class="agree">[ ]</td>
 
@@ -469,9 +523,13 @@
                     <td class="foot"></td>
                     <td class="stance">
                     </td>
-                    <td class="gear l-side"><br></td>
-                    <td class="other">
-                    </td>
+                    @if ($isERental)
+                        <td class="gear l-side" colspan="2"><br></td>
+                    @else
+                        <td class="gear l-side"><br></td>
+                        <td class="other">
+                        </td>
+                    @endif
                     <td class="price">
                     </td>
                     <td class="agree">[ ]</td>
@@ -486,8 +544,8 @@
 <body>
     <table class="">
         @foreach ($reservation->details as $detail)
-            @if (!is_null($detail->mainGearMenu))
-                @if ($detail->mainGearMenu->name !== '利用しない')
+            @if (!is_null($detail->mainGearMenu) || $detail->main_item_name != '')
+                @if ($detail->mainGearMenu?->name !== '利用しない')
                     <tr>
                         <td>
                             <table class="build-info line-on-dot">
@@ -502,7 +560,13 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="build-plan-name">{{ $detail->mainGearMenu->name }}</td>
+                                    <td class="build-plan-name">
+                                        @if ($isERental == true)
+                                            {{ $detail->main_item_name }}
+                                        @else
+                                            {{ $detail->mainGearMenu->name }}
+                                        @endif
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="build-info-tr">
@@ -531,7 +595,13 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="build-plan-name">{{ $detail->mainGearMenu->name }}</td>
+                                    <td class="build-plan-name">
+                                        @if ($isERental == true)
+                                            {{ $detail->main_item_name }}
+                                        @else
+                                            {{ $detail->mainGearMenu->name }}
+                                        @endif
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="build-info-tr">

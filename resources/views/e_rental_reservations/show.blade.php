@@ -9,10 +9,22 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             {{-- 操作ボタンエリア --}}
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center flex-wrap gap-3">
                 <a href="{{ route('reservations.index') }}" class="text-gray-600 hover:text-gray-900">
                     &larr; 一覧に戻る
                 </a>
+
+                <div class="flex gap-3">
+                    <a href="{{ route('e_rental_reservations.pdf', $reservation->id) }}"
+                        class="inline-flex items-center px-4 py-2 rounded-md border border-transparent bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
+                        target="_blank">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        帳票PDFを出力
+                    </a>
+                </div>
 
                 {{-- 本予約への変換が未完了の場合のみ表示する等の制御も可能 --}}
                 {{-- @if ($reservation->import_status == 0)
@@ -131,6 +143,21 @@
                             <div class="mt-6 text-sm text-gray-400">コメントなし</div>
                         @endif
                     @endif
+                </div>
+            </div>
+
+            {{-- ▼▼▼ 追加: システム管理項目セクション ▼▼▼ --}}
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    <h3 class="text-lg font-bold mb-4 border-b pb-2">システム管理項目</h3>
+                    <div>
+                        <label class="text-xs text-gray-500">管理番号 (Build No)</label>
+                        {{-- 目立つように少し大きく表示 --}}
+                        <div class="font-bold text-2xl text-indigo-700">
+                            {{ $reservation->build_number ?? '未採番' }}
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">※この番号は、同日のWEB予約と重複しないユニークな番号です（帳票印刷などに使用）</p>
+                    </div>
                 </div>
             </div>
 

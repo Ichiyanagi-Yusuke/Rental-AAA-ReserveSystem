@@ -9,6 +9,7 @@ use App\Models\RentalMenu;
 use App\Models\RentalMenuCategory; // ★ 追加
 use App\Models\BusinessCalendar;
 use App\Models\ReservationSummary;
+use App\Models\ERentalReservation; // ★ 追加
 
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -210,16 +211,22 @@ class ReservationController extends Controller
             return redirect()->route('reservations.index');
         }
 
-        $query = Reservation::with('resort')->withCount('details');
+        $query = ReservationSummary::query();
+
+        // 検索キーワードに含まれる全角スペースを半角に変換（ヒット率向上のため）
+        $keyword = str_replace('　', ' ', $keyword);
 
         // 複数のフィールドで検索（OR条件）
         $query->where(function ($q) use ($keyword) {
             $q->where('phone', 'like', '%' . $keyword . '%')
-              ->orWhere('email', 'like', '%' . $keyword . '%')
-              ->orWhere('rep_last_name', 'like', '%' . $keyword . '%')
-              ->orWhere('rep_first_name', 'like', '%' . $keyword . '%')
-              ->orWhere('rep_last_name_kana', 'like', '%' . $keyword . '%')
-              ->orWhere('rep_first_name_kana', 'like', '%' . $keyword . '%');
+                ->orWhere('email', 'like', '%' . $keyword . '%')
+                // ▼▼▼ 修正箇所: rep_last_name等は存在しないため、rep_name等に変更 ▼▼▼
+                ->orWhere('rep_name', 'like', '%' . $keyword . '%')
+                ->orWhere('rep_kana', 'like', '%' . $keyword . '%')
+                // ▲▲▲ 修正ここまで ▲▲▲
+
+                // ★推奨: 予約番号でも検索できるように追加
+                ->orWhere('reservation_number', 'like', '%' . $keyword . '%');
         });
 
         $reservations = $query
@@ -971,25 +978,36 @@ class ReservationController extends Controller
             $toDate   = Carbon::parse($request->input('to_date'))->endOfDay();
         }
 
+        // 通常予約の取得
         $query = Reservation::with([
             'resort',
             'details' => fn($q) => $q->orderBy('id'),
         ])
             ->whereNull('printed_at'); // ★ 未印刷のみ
 
+        // Eレンタル予約の取得
+        $eRentalQuery = ERentalReservation::with(['details'])
+            ->whereNull('printed_at'); // ★ 未印刷のみ
+
         switch ($mode) {
             case 'today':
                 $today = Carbon::today();
                 $query->whereDate('visit_date', $today->toDateString());
+                $eRentalQuery->whereDate('visit_date', $today->toDateString());
                 break;
 
             case 'tomorrow':
                 $tomorrow = Carbon::tomorrow();
                 $query->whereDate('visit_date', $tomorrow->toDateString());
+                $eRentalQuery->whereDate('visit_date', $tomorrow->toDateString());
                 break;
 
             case 'range':
                 $query->whereBetween('visit_date', [
+                    $fromDate->toDateString(),
+                    $toDate->toDateString(),
+                ]);
+                $eRentalQuery->whereBetween('visit_date', [
                     $fromDate->toDateString(),
                     $toDate->toDateString(),
                 ]);
@@ -1005,26 +1023,62 @@ class ReservationController extends Controller
             ->orderBy('visit_time')
             ->get();
 
-        if ($reservations->isEmpty()) {
+        $eRentalReservations = $eRentalQuery
+            ->orderBy('visit_date')
+            ->orderBy('visit_time')
+            ->get();
+
+        // Eレンタル予約のitems_textからmain_item_nameを抽出（downloadPdfと同じ処理）
+        foreach ($eRentalReservations as $reservation) {
+            foreach ($reservation->details as $detail) {
+                $extracted = \Illuminate\Support\Str::before($detail->items_text, '…');
+                if ($extracted === $detail->items_text) {
+                    $extracted = \Illuminate\Support\Str::before($detail->items_text, '...');
+                }
+                $mainItemName = trim($extracted);
+                if (\Illuminate\Support\Str::contains($mainItemName, ['グローブ', 'ゴーグル', 'ウェア'])) {
+                    $detail->main_item_name = '';
+                } else {
+                    $detail->main_item_name = $mainItemName;
+                }
+            }
+        }
+
+        // 両方のコレクションを結合してvisit_date順にソート
+        $allReservations = $reservations->concat($eRentalReservations)
+            ->sortBy([
+                ['visit_date', 'asc'],
+                ['visit_time', 'asc'],
+            ]);
+
+        if ($allReservations->isEmpty()) {
             return back()->with('status', '条件に合致する未印刷の予約はありません。');
         }
 
         // ★ 印刷日時 & 印刷者を一括更新
         $userId = Auth::id();
+        $now = now();
 
-        DB::transaction(function () use ($reservations, $userId) {
-            $now = now();
+        DB::transaction(function () use ($reservations, $eRentalReservations, $userId, $now) {
+            // 通常予約の更新
             foreach ($reservations as $reservation) {
                 $reservation->printed_at      = $now;
                 $reservation->printed_user_id = $userId;
                 $reservation->is_needs_confirmation = false;
                 $reservation->save();
             }
+
+            // Eレンタル予約の更新
+            foreach ($eRentalReservations as $reservation) {
+                $reservation->printed_at      = $now;
+                $reservation->printed_user_id = $userId;
+                $reservation->save();
+            }
         });
 
         // ★ まとめて1つのPDFにする
         $pdf = Pdf::loadView('reservations.bill_for_reserves', [
-            'reservations' => $reservations,
+            'reservations' => $allReservations,
         ])
             ->setPaper('A4', 'portrait');
 

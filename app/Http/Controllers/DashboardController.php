@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Reservation;
+use App\Models\ReservationSummary;
 
 class DashboardController extends Controller
 {
@@ -24,7 +25,13 @@ class DashboardController extends Controller
             ->get();
 
         // 代表者コメント確認待ち
-        $commentPendingReservations = Reservation::whereNotNull('note')
+        // $commentPendingReservations = Reservation::whereNotNull('note')
+        //     ->where('note', '!=', '')
+        //     ->where('is_comment_checked', false)
+        //     ->orderBy('visit_date', 'asc')
+        //     ->get();
+
+        $commentPendingReservations = ReservationSummary::whereNotNull('note')
             ->where('note', '!=', '')
             ->where('is_comment_checked', false)
             ->orderBy('visit_date', 'asc')
@@ -72,7 +79,13 @@ class DashboardController extends Controller
             ->get();
 
         // 代表者コメント確認待ち
-        $commentPendingReservations = Reservation::whereNotNull('note')
+        // $commentPendingReservations = Reservation::whereNotNull('note')
+        //     ->where('note', '!=', '')
+        //     ->where('is_comment_checked', false)
+        //     ->orderBy('visit_date', 'asc')
+        //     ->get();
+
+        $commentPendingReservations = ReservationSummary::whereNotNull('note')
             ->where('note', '!=', '')
             ->where('is_comment_checked', false)
             ->orderBy('visit_date', 'asc')

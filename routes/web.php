@@ -23,13 +23,13 @@ use App\Http\Controllers\ERentalReservationController; // 追加
 use App\Models\Reservation;
 
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
-Route::get('/home/pricing', [HomeController::class, 'pricing'])->name('client.pricing');
-Route::get('/home/calendar', [HomeController::class, 'calendar'])->name('client.calendar');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/pricing', [HomeController::class, 'pricing'])->name('client.pricing');
+Route::get('/calendar', [HomeController::class, 'calendar'])->name('client.calendar');
 
 
-Route::get('/home/news', [PublicNewsController::class, 'index'])->name('client.news.index');
-Route::get('/home/news/{id}', [PublicNewsController::class, 'show'])->name('client.news.show');
+Route::get('/news', [PublicNewsController::class, 'index'])->name('client.news.index');
+Route::get('/news/{id}', [PublicNewsController::class, 'show'])->name('client.news.show');
 
 // クライアント向け予約ページ
 use App\Http\Controllers\ClientReservationController;
@@ -79,11 +79,21 @@ Route::prefix('reservation/edit')->name('client.reservation.edit.')->group(funct
 });
 
 
-Route::get('/', function () {
-    // 未ログインなら login / ログイン済みなら dashboard
-    return auth()->check()
-        ? redirect()->route('dashboard')
-        : redirect()->route('login');
+// 旧ルート: /home を / にリダイレクト（互換性のため）
+Route::get('/home', function () {
+    return redirect()->route('home');
+});
+
+Route::get('/home/pricing', function () {
+    return redirect()->route('client.pricing');
+});
+
+Route::get('/home/calendar', function () {
+    return redirect()->route('client.calendar');
+});
+
+Route::get('/home/news', function () {
+    return redirect()->route('client.news.index');
 });
 
 // Route::get('/dashboard', function () {
@@ -91,12 +101,14 @@ Route::get('/', function () {
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
 // メインダッシュボード
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-// ★ 新規追加ページ
-Route::get('/dashboard/reservations', [DashboardController::class, 'reservations'])->name('dashboard.reservations');
-Route::get('/dashboard/notifications', [DashboardController::class, 'notifications'])->name('dashboard.notifications');
-Route::get('/dashboard/functions', [DashboardController::class, 'functions'])->name('dashboard.functions');
+    // ★ 新規追加ページ
+    Route::get('/dashboard/reservations', [DashboardController::class, 'reservations'])->name('dashboard.reservations');
+    Route::get('/dashboard/notifications', [DashboardController::class, 'notifications'])->name('dashboard.notifications');
+    Route::get('/dashboard/functions', [DashboardController::class, 'functions'])->name('dashboard.functions');
+});
 
 // 参照用（全ログインユーザーOK）
 Route::middleware(['auth'])->group(function () {

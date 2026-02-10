@@ -19,7 +19,17 @@ class BusinessCalendarController extends Controller
     public function index(Request $request)
     {
         $now = now();
-        $seasonYear = (int) $request->input('season_year', $now->year);
+        $currentMonth = $now->month;
+
+        // デフォルトのシーズン年を計算
+        // 5月〜12月: 現在の年のシーズン
+        // 1月〜4月: 現在の年-1のシーズン
+        $defaultSeasonYear = ($currentMonth >= 5 && $currentMonth <= 12)
+            ? $now->year
+            : $now->year - 1;
+
+            $seasonYear = (int) $request->input('season_year', $defaultSeasonYear);
+            // dd($seasonYear);
 
         // 12, 1, 2, 3, 4 だけ許可
         $allowedMonths = [12, 1, 2, 3, 4];

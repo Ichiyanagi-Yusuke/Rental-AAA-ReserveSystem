@@ -261,7 +261,7 @@ class ReservationController extends Controller
         $startOfMonth = $baseDate->copy()->startOfMonth();
         $endOfMonth = $baseDate->copy()->endOfMonth();
 
-        // 当月の予約データを取得し、日付ごとに集計
+        // 当月の予約データを取得し、日付ごとに集計（来店日基準）
         $reservations = Reservation::whereBetween('visit_date', [$startOfMonth, $endOfMonth])
             ->withCount('details')
             ->get()
@@ -274,6 +274,16 @@ class ReservationController extends Controller
                     'guest_count' => $group->sum('details_count'),
                 ];
             });
+
+        // 予約登録実績（created_at基準）を取得
+        $createdStats = Reservation::whereBetween(DB::raw('DATE(created_at)'), [$startOfMonth->toDateString(), $endOfMonth->toDateString()])
+            ->select(
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->get()
+            ->keyBy('date');
 
         // カレンダーの週を生成
         $calendar = [];
@@ -292,11 +302,17 @@ class ReservationController extends Controller
                     'isToday' => $currentDate->isToday(),
                     'reservation_count' => 0,
                     'guest_count' => 0,
+                    'created_count' => 0,  // 予約登録実績
                 ];
 
                 if ($isCurrentMonth && isset($reservations[$dateStr])) {
                     $dayData['reservation_count'] = $reservations[$dateStr]->reservation_count;
                     $dayData['guest_count'] = $reservations[$dateStr]->guest_count ?? 0;
+                }
+
+                // 予約登録実績を追加
+                if ($isCurrentMonth && isset($createdStats[$dateStr])) {
+                    $dayData['created_count'] = $createdStats[$dateStr]->count;
                 }
 
                 $week[] = $dayData;

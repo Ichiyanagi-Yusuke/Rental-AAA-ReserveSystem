@@ -114,6 +114,12 @@
                                                             予約なし
                                                         </div>
                                                     @endif
+
+                                                    @if ($day['created_count'] > 0)
+                                                        <div class="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded mt-1">
+                                                            登録: {{ $day['created_count'] }}件
+                                                        </div>
+                                                    @endif
                                                 </a>
                                             @else
                                                 <div class="p-2">
@@ -141,11 +147,15 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="w-4 h-4 bg-blue-100 border border-gray-300"></div>
-                        <span>予約件数</span>
+                        <span>予約件数（来店日基準）</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="w-4 h-4 bg-green-100 border border-gray-300"></div>
                         <span>利用者数</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 bg-emerald-100 border border-gray-300"></div>
+                        <span>登録件数（登録日基準）</span>
                     </div>
                     <div class="text-gray-500">
                         ※ 日付をクリックするとその日の予約一覧が表示されます

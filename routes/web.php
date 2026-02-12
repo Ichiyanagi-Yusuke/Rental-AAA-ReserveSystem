@@ -108,6 +108,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/reservations', [DashboardController::class, 'reservations'])->name('dashboard.reservations');
     Route::get('/dashboard/notifications', [DashboardController::class, 'notifications'])->name('dashboard.notifications');
     Route::get('/dashboard/functions', [DashboardController::class, 'functions'])->name('dashboard.functions');
+
+    // 予約回数実績（過去4週間）
+    Route::get('/dashboard/reservation-stats', [DashboardController::class, 'reservationStats'])->name('dashboard.reservation_stats');
 });
 
 // 参照用（全ログインユーザーOK）

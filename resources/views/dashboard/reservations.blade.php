@@ -121,6 +121,39 @@
                         前日準備用に、来店人数やメニュー構成を確認できます。
                     </div>
                 </a>
+
+                {{-- 予約回数実績カード --}}
+                <a href="{{ route('dashboard.reservation_stats') }}"
+                    class="flex flex-col justify-between bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 hover:shadow-md hover:border-emerald-200 transition">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-900">
+                                予約回数実績
+                            </h3>
+                            <p class="mt-1 text-xs text-gray-500">
+                                過去4週間の日別予約回数（登録日基準）を確認します。
+                            </p>
+                        </div>
+                        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50">
+                            <svg class="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs">
+                        <span class="inline-flex items-center rounded-full px-2.5 py-1 bg-gray-100 text-gray-600">
+                            4週間分
+                        </span>
+                        <span class="inline-flex items-center text-emerald-600 font-medium">
+                            開く
+                            <svg class="ml-1 h-3 w-3" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </span>
+                    </div>
+                </a>
             </div>
         </div>
     </div>

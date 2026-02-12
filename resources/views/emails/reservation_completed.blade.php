@@ -97,11 +97,11 @@
         {{-- 性別はコントローラーで文字列として保存されています --}}
         <p>性別：
             @switch($detail->gendar)
-                @case(0)
+                @case(1)
                     男性
                 @break
 
-                @case(1)
+                @case(0)
                     女性
                 @break
 

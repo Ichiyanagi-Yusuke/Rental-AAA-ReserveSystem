@@ -8,10 +8,10 @@
         $goggleMenu = $detail->goggle_menu_id ? \App\Models\RentalMenu::find($detail->goggle_menu_id) : null;
 
         $genderLabel = match ($detail->gender ?? null) {
-            'man' => '男性',
-            'woman' => '女性',
-            'none' => '未回答',
-            default => '',
+            '1' => '男性',
+            '0' => '女性',
+            '' => '未回答',
+            default => 'ss',
         };
     @endphp
 
@@ -78,7 +78,20 @@
                         <h4 class="text-xs font-semibold text-gray-500 mb-1">基本情報</h4>
                         <p><span class="font-medium">氏名：</span>{{ $detail->guest_name ?? '' }}</p>
                         <p><span class="font-medium">フリガナ：</span>{{ $detail->guest_name_kana ?? '' }}</p>
-                        <p><span class="font-medium">性別：</span>{{ $genderLabel }}</p>
+                        <p><span class="font-medium">性別：</span>
+                            @switch($detail->gendar)
+                                @case(1)
+                                    男性
+                                @break
+
+                                @case(0)
+                                    女性
+                                @break
+
+                                @default
+                                    回答しない
+                            @endswitch
+                        </p>
                         <p><span class="font-medium">区分：</span>{{ $detail->is_child ? '子供' : '大人' }}</p>
                         <p>
                             <span class="font-medium">身長：</span>

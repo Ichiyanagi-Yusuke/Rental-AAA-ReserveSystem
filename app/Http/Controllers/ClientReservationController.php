@@ -463,6 +463,9 @@ class ClientReservationController extends Controller
                 ->with('status', 'セッションが切れました。お手数ですが、最初から入力し直してください。');
         }
 
+        // $header['is_terms_agreed'] = '1';
+        // dd($header);
+
         DB::beginTransaction();
 
         try {
@@ -483,6 +486,7 @@ class ClientReservationController extends Controller
 
             // 予約ヘッダ登録
             $reservation = Reservation::create([
+                'is_terms_agreed'       => '1',
                 'rep_last_name'         => $header['last_name'],
                 'rep_first_name'        => $header['first_name'],
                 'rep_last_name_kana'    => $header['last_name_f'],

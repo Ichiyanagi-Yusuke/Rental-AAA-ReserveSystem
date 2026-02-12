@@ -358,7 +358,21 @@
                                     </div>
                                     <div class="flex justify-between border-b border-dashed border-gray-100 py-1">
                                         <span class="font-medium text-gray-600">性別</span>
-                                        <span>{{ $genderLabel }}</span>
+                                        <span>
+                                            @switch($detail->gendar)
+                                                @case(1)
+                                                    男性
+                                                @break
+
+                                                @case(0)
+                                                    女性
+                                                @break
+
+                                                @default
+                                                    回答しない
+                                            @endswitch
+
+                                        </span>
                                     </div>
                                     <div class="flex justify-between border-b border-dashed border-gray-100 py-1">
                                         <span class="font-medium text-gray-600">区分</span>
@@ -482,12 +496,12 @@
                             </div>
                         </div>
                     </div>
-                @empty
-                    <p class="text-sm text-gray-500">
-                        利用者情報が登録されていません。
-                    </p>
-                @endforelse
+                    @empty
+                        <p class="text-sm text-gray-500">
+                            利用者情報が登録されていません。
+                        </p>
+                    @endforelse
+                </div>
             </div>
         </div>
-    </div>
-</x-app-layout>
+    </x-app-layout>
